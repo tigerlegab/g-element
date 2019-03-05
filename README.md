@@ -10,15 +10,15 @@ A collection of elements used by Authentic System Solutions.
 
 - [g-input-suggest](https://github.com/tigerlegab/g-element/tree/master/elements) - A paper-input that provides the user with input suggestions.
 
-- [g-location](https://github.com/tigerlegab/g-element/tree/master/elements) - A geo-location element.
+- [g-location](https://github.com/tigerlegab/g-element/tree/master/elements) - A wrapper element for html5 geo-location.
 
 - [g-mongo-auth](https://github.com/tigerlegab/g-element/tree/master/elements) - An authorization element for nodejs mongodb.
 
-- [g-notification](https://github.com/tigerlegab/g-element/tree/master/elements) - A client side notification element.
+- [g-notification](https://github.com/tigerlegab/g-element/tree/master/elements) - A wrapper element for html5 client side notification.
 
-- [g-search](https://github.com/tigerlegab/g-element/tree/master/elements) - A search bar element.
+- [g-search-bar](https://github.com/tigerlegab/g-element/tree/master/elements) - A paper search bar element.
 
-- [g-storage](https://github.com/tigerlegab/g-element/tree/master/elements) - An indexed-db element.
+- [g-storage](https://github.com/tigerlegab/g-element/tree/master/elements) - A wrapper element for html5 indexed-db.
 
 - [g-wizard-steps](https://github.com/tigerlegab/g-element/tree/master/elements) - A steps progress element.
 
@@ -40,11 +40,11 @@ npm install --save g-element
 <html>
   <head>
     <script type="module">
-      import 'g-element/g-element.js';
+      import 'g-element/elements/my-element.js';
     </script>
   </head>
   <body>
-    <g-element></g-element>
+    <my-element></my-element>
   </body>
 </html>
 ```
@@ -52,12 +52,12 @@ npm install --save g-element
 ### In a Polymer 3 element
 ```js
 import {PolymerElement, html} from '@polymer/polymer';
-import 'g-element/g-element.js';
+import 'g-element/elements/my-element.js';
 
 class SampleElement extends PolymerElement {
   static get template() {
     return html`
-     <g-element></g-element>
+     <my-element></my-element>
     `;
   }
 }

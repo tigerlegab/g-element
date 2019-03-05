@@ -1,5 +1,4 @@
 /* from https://github.com/David-Mulder/whenever.js */
-
 export const Whenever = function () {
     var callbacks = [];
     var ready = false;

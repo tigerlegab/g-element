@@ -1,4 +1,4 @@
-
+// from https://github.com/timeu/timeu-wizard
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
 import { microTask } from '@polymer/polymer/lib/utils/async.js';
@@ -6,10 +6,6 @@ import { GestureEventListeners } from '@polymer/polymer/lib/mixins/gesture-event
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import '@webcomponents/shadycss/entrypoints/apply-shim.js';
 import '@polymer/polymer/lib/elements/dom-repeat.js';
-
-/**
- * All credits to: https://github.com/timeu/timeu-wizard
- */
 
 class GWizardSteps extends GestureEventListeners(PolymerElement) {
     static get template() {

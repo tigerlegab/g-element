@@ -1,5 +1,4 @@
 /* from https://github.com/bluewatertracks/bwt-datatable */
-
 export class CollectionHelpers {
     constructor(data) {
         this.store = data.slice();

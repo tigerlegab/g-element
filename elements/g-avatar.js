@@ -1,13 +1,10 @@
+// from https://github.com/Abe90/paper-avatar
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
-
-/**
- * All credits to: https://github.com/Abe90/paper-avatar
- */
 
 class GAvatar extends PolymerElement {
     static get template() {
         return html`
-            <style include="shared-styles">
+            <style>
                 :host {
                     --g-avatar-width: 40px;
                 }
@@ -90,7 +87,7 @@ class GAvatar extends PolymerElement {
             },
 
             /**
-             *Label with username
+             * Label to display
              */
             label: {
                 type: String,

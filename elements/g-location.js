@@ -44,12 +44,6 @@ Polymer({
 
     is: 'g-location',
 
-    properties: {
-        /**
-        * None
-        */
-    },
-
     /**
     * @method requestLocation
     * 

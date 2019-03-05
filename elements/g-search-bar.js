@@ -4,24 +4,58 @@ import { IronA11yKeysBehavior } from '@polymer/iron-a11y-keys-behavior/iron-a11y
 import '@polymer/iron-input/iron-input.js';
 import '@polymer/iron-flex-layout/iron-flex-layout.js';
 import '@polymer/paper-styles/default-theme.js';
+import './g-icons.js';
 
-class GSearch extends mixinBehaviors([IronA11yKeysBehavior], PolymerElement) {
+class GSearchBar extends mixinBehaviors([IronA11yKeysBehavior], PolymerElement) {
     static get template() {
         return html`
-        <style include="shared-styles">
-            :host {
-                display: block;
-            }
+        <style>
+            :host { display: block; }
+            .horizontal-holder {
+				background: var(--background-color, white);
+				display: block;
+				padding: 0 16px;
+				@apply --layout-horizontal;
+				@apply --layout-center-center;
+				height: var(--g-search-bar-height, 48px);
+				box-sizing: border-box;
+			}
+
+			iron-input {
+				@apply --layout-flex;
+				@apply --layout-vertical;
+				height: 100%;
+			}
+
+			.icon {
+				color: var(--disabled-text-color);
+				@apply --icon-styles;
+			}
+
+			#input {
+				@apply --layout-flex;
+				margin: 0 10px;
+				padding: 16px 0;
+				cursor: text;
+				background: transparent;
+				color: inherit;
+				@apply --input-styles;
+				border: 0;
+                outline: 0;
+			}
+
+			#input::-ms-clear { display: none; }
+			#input[disabled] { @apply --disabled-input-styles; }
         </style>
 
         <div class="horizontal-holder">
-			<iron-icon icon="my-icons:search" class="icon"></iron-icon>
+			<iron-icon icon="g-icons:search" class="icon"></iron-icon>
 			<iron-input bind-value="{{query}}">
 				<input id="input" is="iron-input" placeholder="[[placeholder]]" value="{{value::input}}">
 			</iron-input>
 
 			<template is="dom-if" if="{{query}}">
-				<paper-icon-button icon="my-icons:close" on-tap="_clear" class="icon"></paper-icon-button>
+				<paper-icon-button icon="g-icons:close" on-tap="_clear" class="icon"></paper-icon-button>
 			</template>
 		</div>
         `;
@@ -60,12 +94,12 @@ class GSearch extends mixinBehaviors([IronA11yKeysBehavior], PolymerElement) {
     _clear() {
         this.query = "";
         this.$.input.focus();
-        this.fire('g-search-clear');
+        this.fire('g-search-bar-clear');
     }
 
     _search() {
-        this.fire('g-search-search');
+        this.fire('g-search-bar-search');
     }
 }
 
-window.customElements.define('g-search', GSearch);
+window.customElements.define('g-search-bar', GSearchBar);

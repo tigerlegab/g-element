@@ -1,7 +1,7 @@
 ## \<g-datatable\>
 
-A responsive data table with Polymer 3 support.
-From the original `paper-datatable` - [David-Mulder paper-datatable](https://github.com/David-Mulder/paper-datatable) and Polymer 2 `bwt-datatable` - [Bluewatertracks bwt-datatable](https://github.com/bluewatertracks/bwt-datatable) 
+A responsive data table with Polymer 3 support. <br />
+From the original `paper-datatable` - [David-Mulder paper-datatable](https://github.com/David-Mulder/paper-datatable) and Polymer 2 `bwt-datatable` - [Bluewatertracks bwt-datatable](https://github.com/bluewatertracks/bwt-datatable).
 
 ### Todos
 1. Implement `paper-datatable-card`

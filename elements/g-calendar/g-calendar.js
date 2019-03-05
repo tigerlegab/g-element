@@ -10,11 +10,10 @@ import './fc-base-theme.js';
  * Fullcalendar integration to Polymer 3
  */
 
-const baseUrl = window.location.origin;
 new ScriptLoader([
-    baseUrl + '/node_modules/jquery/dist/jquery.min.js',
-    baseUrl + '/node_modules/moment/min/moment.min.js',
-    baseUrl + '/node_modules/fullcalendar/dist/fullcalendar.min.js'
+    'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.min.js'
 ], function () {
     // Initalize Polymer Element after all required scripts are loaded.
     // console.log('All scripts loaded! Initialize Polymer.');

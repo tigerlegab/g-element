@@ -1,26 +1,29 @@
 {
   "name": "g-element",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "A collection of elements used by Authentic System Solutions",
-  "main": "g-element.js",
+  "main": "index.html",
   "author": "Gabriel Jefferson",
   "license": "MIT",
   "scripts": {
     "start": "polymer serve"
   },
   "dependencies": {
+    "@polymer/iron-icon": "^3.0.1",
+    "@polymer/iron-iconset-svg": "^3.0.1",
+    "@polymer/iron-input": "^3.0.1",
+    "@polymer/iron-list": "^3.0.2",
     "@polymer/iron-media-query": "^3.0.1",
     "@polymer/iron-resizable-behavior": "^3.0.1",
     "@polymer/paper-checkbox": "^3.1.0",
+    "@polymer/paper-icon-button": "^3.0.2",
+    "@polymer/paper-input": "^3.0.1",
+    "@polymer/paper-spinner": "^3.0.2",
     "@polymer/polymer": "^3.0.0"
   },
   "devDependencies": {
-    "@polymer/paper-button": "^3.0.1",
-    "@polymer/paper-input": "^3.0.1",
-    "@webcomponents/webcomponentsjs": "^2.2.7",
-    "fullcalendar": "^3.10.0",
-    "jquery": "^3.3.1",
-    "moment": "^2.24.0"
+    "@polymer/iron-demo-helpers": "^3.0.2",
+    "@webcomponents/webcomponentsjs": "^2.2.7"
   },
   "keywords": [
     "auss",

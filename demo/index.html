@@ -1,287 +1,203 @@
 <!doctype html>
-<html lang="en">
+<html>
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-  <title>g-element demo</title>
+  <title>G-Element Demo</title>
 
   <script>
-    // Load and register pre-caching Service Worker
+    // Load and register service worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
         navigator.serviceWorker.register('service-worker.js');
       });
     }
   </script>
+
+  <!-- Load webcomponents-loader.js -->
   <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
 
-  <style>
-    body {
-      background-color: #eee;
-      margin: 16px 6px;
-      padding: 16px 6px;
-    }
-  </style>
+  <!-- Load modules -->
+  <script type="module">
+    import '@polymer/iron-demo-helpers/demo-pages-shared-styles.js';
+    import '@polymer/iron-demo-helpers/demo-snippet.js';
+    import { html } from '@polymer/polymer/lib/utils/html-tag.js';
+    import '../elements/g-avatar.js';
+    import '../elements/g-input-suggest.js';
+    import '../elements/g-location.js';
+    import '../elements/g-mongo-auth.js';
+    import '../elements/g-notification.js';
+    import '../elements/g-search-bar.js';
+    import '../elements/g-storage.js';
+    import '../elements/g-wizard-steps.js';
+    // import '../elements/g-socket-io/g-socket-io.js';
+    import '../elements/g-calendar/g-calendar.js';
+    import '../elements/g-datatable/g-datatable.js';
+
+    const template = html`
+      <custom-style>
+        <style is="custom-style" include="demo-pages-shared-styles"></style>
+      </custom-style>
+    `;
+    document.head.appendChild(template.content);
+  </script>
 </head>
 
 <body unresolved>
-  <dom-module id="x-poly-element">
-    <template>
-      <style>
-        :host {
-          display: block;
-          font-family: "Roboto", "Noto", sans-serif;
-          max-width: 767px;
-          margin: 0 auto;
-        }
+  <div class="vertical-section-container centered">
+    <h3>g-avatar</h3>
+    <demo-snippet>
+      <template>
+        <g-avatar label="A"></g-avatar>
+        <g-avatar label="BC" two-chars></g-avatar>
+        <g-avatar label="1" type="number"></g-avatar>
+      </template>
+    </demo-snippet>
 
-        .card {
-          margin-bottom: 16px;
-          padding: 16px;
-          color: #757575;
-          border-radius: 5px;
-          background-color: #fff;
-          box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
-          position: relative;
-        }
+    <h3>g-input-suggest</h3>
+    <demo-snippet>
+      <template>
+        <g-input-suggest always-float-label placeholder="Tap me" label="Select contact" items-url="./contacts.json"
+          text-property="name">
+        </g-input-suggest>
+      </template>
+    </demo-snippet>
 
-        paper-button {
-          height: 32px;
-          font-size: 12px;
-          font-weight: 400;
-        }
+    <h3>g-location</h3>
+    <demo-snippet>
+      <template>
+        <g-location id="location"></g-location>
+        <button onclick="requestLocation()">Request Location</button>
 
-        paper-button.primary {
-          font-size: 14px;
-          border-radius: 0;
-          background-color: #4285f4;
-          color: white;
-          padding: 16px 24px;
-          margin: 6px 0;
-          margin-top: 16px;
-          text-transform: none;
-        }
-
-        h1 {
-          margin: 10px 0;
-          color: #404040;
-          font-size: 24px;
-          font-weight: 500;
-        }
-
-        @media (max-width: 480px) {
-          table {
-            width: 100%;
+        <script>
+          function requestLocation() {
+            document.getElementById('location').requestLocation()
+              .then(data => {
+                // handle location
+                alert(`Latitude: ${data.latitude}\nLongitude: ${data.longitude}\nAccuracy: ${data.accuracy}\nTime: ${data.time}`);
+              })
+              .catch(error => {
+                // handle error
+                alert(error);
+              });
           }
-        }
+        </script>
+      </template>
+    </demo-snippet>
 
-        @media (min-width: 480px) {
-          table {
-            width: 50%;
+    <h3>g-mongo-auth</h3>
+    <demo-snippet>
+      <template>
+        <g-mongo-auth path="{{path}}" status-known="{{statusknown}}" user="{{user}}" on-error="_handleError">
+        </g-mongo-auth>
+      </template>
+    </demo-snippet>
+
+    <h3>g-notification</h3>
+    <demo-snippet>
+      <template>
+        <g-notification id="notification" is-granted="{{isGranted}}"></g-notification>
+        <button id="request" onclick="requestPermission()">Request Permission</button>
+        <button id="send" disabled onclick="sendNotification()">Send Notification</button>
+
+        <script>
+          function requestPermission() {
+            document.getElementById('notification').requestPermission();
+            document.getElementById('request').disabled = true;
+            document.getElementById('send').disabled = false;
           }
-        }
-      </style>
 
-      <h3>
-        g-element
-      </h3>
-
-      <!-- g-location -->
-      <g-location id="location"></g-location>
-      <div class="card">
-        <h1>g-location</h1>
-        <div>
-          <table>
-            <tr>
-              <td>Latitude:</td>
-              <td>{{locationInfo.latitude}}</td>
-            </tr>
-            <tr>
-              <td>Longitude:</td>
-              <td>{{locationInfo.longitude}}</td>
-            </tr>
-            <tr>
-              <td>Accuracy:</td>
-              <td>{{locationInfo.accuracy}}</td>
-            </tr>
-            <tr>
-              <td>Time:</td>
-              <td>{{locationInfo.time}}</td>
-            </tr>
-          </table>
-        </div>
-        <div style="text-align: right">
-          <paper-button class="primary" on-tap="_requestLocation">Request Location</paper-button>
-        </div>
-      </div>
-
-      <!-- g-notification -->
-      <g-notification id="notification" is-granted="{{isGranted}}"></g-notification>
-      <div class="card">
-        <h1>g-notification</h1>
-        <div>
-          <paper-input id="notificationTitle" required label="Title" value="{{notificationTitle}}"></paper-input>
-          <paper-input id="notificationBody" required label="Body" value="{{notificationBody}}"></paper-input>
-          <paper-input label="Icon" readonly value="{{notificationIcon}}"></paper-input>
-        </div>
-        <div style="text-align: right">
-          <paper-button class="primary" hidden="{{isGranted}}" on-tap="_requestNotification">Request Notification
-          </paper-button>
-          <paper-button class="primary" hidden="{{!isGranted}}" on-tap="_sendNotification">Send Notification
-          </paper-button>
-        </div>
-      </div>
-
-      <!-- g-storage -->
-      <g-storage key="person" data="{{indexedData}}" persisted-data="{{persistedData}}"
-        connected="{{indexedConnected}}"></g-storage>
-      <div class="card">
-        <h1>g-storage</h1>
-        <div> Connected: {{indexedConnected}} </div>
-        <paper-input label="Type and enter to add data" on-keyup="_indexedInputKeyup"></paper-input>
-        <div style="box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); padding: 6px;">
-          <template is="dom-repeat" items="{{persistedData}}">
-            <div>
-              [[item.name]]
-            </div>
-          </template>
-        </div>
-        <div style="text-align: right">
-          <paper-button class="primary" on-tap="_resetStorage">Reset Storage</paper-button>
-        </div>
-      </div>
-
-      <!-- g-mongo-auth -->
-      <div class="card">
-        <h1>g-mongo-auth</h1>
-        <div>
-          Needs nodejs and mongodb implementation.
-        </div>
-      </div>
-
-      <!-- g-socket-io -->
-      <div class="card">
-        <h1>g-socket-io</h1>
-        <div>Needs socket-io implementation.</div>
-        <div>
-          <a href="https://github.com/tigerlegab/g-element/blob/master/elements/g-socket-io/README.MD" target="_blank">
-            https://github.com/tigerlegab/g-element/blob/master/elements/g-socket-io/README.MD
-          </a>
-        </div>
-      </div>
-
-      <!-- g-calendar -->
-      <div class="card">
-        <h1>g-calendar</h1>
-        <g-calendar id="calendar"></g-calendar>
-      </div>
-
-      <!-- g-datatable -->
-      <div class="card">
-        <h1>g-datatable</h1>
-        <g-datatable data="{{datatableData}}" selectable multi-selection>
-          <div slot="no-results">No users found.</div>
-
-          <g-datatable-column header="Dessert" property="title" type="String" sortable>
-          </g-datatable-column>
-
-          <g-datatable-column header="Name" property="name" type="Object">
-            <template>
-              <span>[[value.firstname]]</span>
-              <span>[[value.lastname]]</span>
-            </template>
-          </g-datatable-column>
-        </g-datatable>
-      </div>
-    </template>
-
-    <script type="module">
-      import '@polymer/polymer/polymer-legacy.js';
-      import '@polymer/paper-button/paper-button.js';
-      import '@polymer/paper-input/paper-input.js';
-      import '../../elements/g-location.js';
-      import '../../elements/g-notification.js';
-      import '../../elements/g-storage.js';
-      import '../../elements/g-calendar/g-calendar.js';
-      import '../../elements/g-datatable/g-datatable.js';
-      import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
-
-      Polymer({
-        is: 'x-poly-element',
-
-        properties: {
-          notificationIcon: {
-            type: String,
-            value: "http://nvps.net/wp-content/uploads/2015/07/email-icon.png"
-          },
-          locationInfo: {
-            type: Object,
-            value: {
-              latitude: "'latitude'",
-              longitude: "'longitude'",
-              accuracy: "'accuracy'",
-              time: "'time'"
-            }
-          },
-          indexedData: {
-            type: Array,
-            notify: true,
-            value: [{ name: "John Doe" }, { name: "Peter John" }, { name: "John Jose" }]
-          },
-          datatableData: {
-            type: Array,
-            value: [
-              { id: 0, title: 'Frozen yogurt', name: { firstname: "Frozen", lastname: "Yogurt" } },
-              { id: 1, title: 'Ice cream sandwich', name: { firstname: "Ice cream", lastname: "Sandwich" } },
-              { id: 2, title: 'Eclair', name: { firstname: "Eclair", lastname: "-" } },
-              { id: 3, title: 'Cupcake', name: { firstname: "Cupcake", lastname: "-" } },
-              { id: 4, title: 'Gingerbread', name: { firstname: "Gingerbread", lastname: "-" } },
-              { id: 5, title: 'Jelly bean', name: { firstname: "Jelly", lastname: "Bean" } }
-            ]
-          }
-        },
-
-        _requestLocation() {
-          this.$.location.requestLocation().then(data => {
-            this.locationInfo = data;
-          }).catch(e => {
-            console.warn(e);
-          });
-        },
-
-        _requestNotification() {
-          this.$.notification.requestPermission();
-        },
-
-        _sendNotification() {
-          if (this.$.notificationTitle.validate() && this.$.notificationBody.validate()) {
-            this.$.notification.sendNotification({
-              title: this.notificationTitle,
-              body: this.notificationBody,
-              icon: this.notificationIcon
+          function sendNotification() {
+            document.getElementById('notification').sendNotification({
+              title: "G-Notification",
+              body: "Welcome to g-notificaiton!",
+              icon: "http://nvps.net/wp-content/uploads/2015/07/email-icon.png"
             });
           }
-        },
+        </script>
+      </template>
+    </demo-snippet>
 
-        _indexedInputKeyup(e) {
-          if (e.keyCode == 13) {
-            this.indexedData.push({ name: e.target.value });
-            this.notifyPath("indexedData", this.indexedData.slice());
-            e.target.value = null;
+    <h3>g-search-bar</h3>
+    <demo-snippet>
+      <template>
+        <custom-style>
+          <style is="custom-style">
+            g-search-bar {
+              border: 1px solid gray;
+            }
+          </style>
+        </custom-style>
+
+        <g-search-bar></g-search-bar>
+      </template>
+    </demo-snippet>
+
+    <h3>g-storage</h3>
+    <demo-snippet>
+      <template>
+        <g-storage key="steps" data='["Step 1","Step 2","Step 3"]' connected="{{indexedConnected}}"></g-storage>
+      </template>
+    </demo-snippet>
+
+    <h3>g-wizard-steps</h3>
+    <demo-snippet>
+      <template>
+        <g-wizard-steps id="wizardSteps" steps='["Step 1","Step 2","Step 3"]' step="1"></g-wizard-steps>
+
+        <div style="margin-top: 16px;">
+          <button onclick="pevStep()">Previous</button>
+          <button onclick="nextStep()">Next</button>
+        </div>
+
+        <script>
+          function pevStep() {
+            document.getElementById('wizardSteps').step -= 1;
           }
-        },
 
-        _resetStorage(e) {
-          this.indexedData = [{ name: "John Doe" }, { name: "Peter John" }, { name: "John Jose" }];
-        }
+          function nextStep() {
+            document.getElementById('wizardSteps').step += 1;
+          }
+        </script>
+      </template>
+    </demo-snippet>
 
-      });
-    </script>
-  </dom-module>
+    <h3>g-socket-io</h3>
+    <demo-snippet>
+      <template>
+        <g-socket-io id="socket" namespace="/" connected="{{connected}}" is-connection-alive="{{isConnectionAlive}}"
+          on-connect="_connect" on-response="_response"></g-socket-io>
+      </template>
+    </demo-snippet>
 
-  <x-poly-element></x-poly-element>
+    <h3>g-calendar</h3>
+    <demo-snippet>
+      <template>
+        <g-calendar id="calendar"></g-calendar>
+      </template>
+    </demo-snippet>
+
+    <h3>g-datatable</h3>
+    <demo-snippet>
+      <template>
+        <g-datatable id="datatable" selectable multi-selection>
+          <div slot="no-results">No contacts found.</div>
+          <g-datatable-column header="Name" property="name" type="String"></g-datatable-column>
+          <g-datatable-column header="City" property="city" type="String"></g-datatable-column>
+        </g-datatable>
+
+        <script>
+          fetch('./contacts.json', { method: "GET" })
+            .then(response => { return response.json(); })
+            .then(response => {
+              document.getElementById('datatable').data = response.splice(0, 5);
+            });
+        </script>
+      </template>
+    </demo-snippet>
+  </div>
 </body>
 
 </html>

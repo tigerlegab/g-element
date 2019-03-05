@@ -81,8 +81,6 @@ Polymer({
         if (this.isSupported && Notification.permission === "granted") {
             if (message) {
                 if (message.title && message.icon && message.body) {
-                    if (!message.requireInteraction) message.requireInteraction = false;
-                    if (!message.sound) message.sound = "default";
                     var options = {
                         body: message.body,
                         icon: message.icon,
@@ -93,9 +91,7 @@ Polymer({
                         renotify: message.renotify,
                         actions: message.actions,
                         image: message.image,
-                        data: {
-                            url: window.location.href
-                        }
+                        data: message.data
                     };
                     navigator.serviceWorker.getRegistration().then(function (reg) {
                         reg.showNotification(message.title, options);

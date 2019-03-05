@@ -92,6 +92,7 @@ Polymer({
          */
         data: {
             type: Array,
+            value: [],
             notify: true
         },
 
