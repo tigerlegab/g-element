@@ -1,6 +1,6 @@
 {
   "name": "g-element",
-  "description": "Polymer Element used by Authentic System Solutions",
+  "description": "A collection of elements used by Authentic System Solutions",
   "main": "g-element.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.6.0"

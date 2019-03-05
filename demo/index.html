@@ -7,31 +7,244 @@
 
   <title>g-element demo</title>
 
-  <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+  <script>
+    // Load and register pre-caching Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('service-worker.js');
+      });
+    }
+  </script>
+  <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
 
-  <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-  <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-  <link rel="import" href="../g-element.html">
-
-  <custom-style>
-    <style is="custom-style" include="demo-pages-shared-styles">
-    </style>
-  </custom-style>
+  <style>
+    body {
+      background-color: #eee;
+      margin: 16px 6px;
+      padding: 16px 6px;
+    }
+  </style>
 </head>
 
-<body>
-  <div class="vertical-section-container centered">
-    <h3>Basic g-element demo</h3>
-    <demo-snippet>
-      <template>
-        <g-location></g-location>
-        <g-mongo-auth></g-mongo-auth>
-        <g-notification></g-notification>
-        <g-socket-io></g-socket-io>
-        <g-storage></g-storage>
-      </template>
-    </demo-snippet>
-  </div>
+<body unresolved>
+  <dom-module id="x-poly-element">
+    <template>
+      <style>
+        :host {
+          display: block;
+          font-family: "Roboto", "Noto", sans-serif;
+          max-width: 676px;
+          margin: 0 auto;
+        }
+
+        .card {
+          margin-bottom: 16px; 
+          padding: 16px;
+          color: #757575;
+          border-radius: 5px;
+          background-color: #fff;
+          box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+          position: relative;
+        }
+
+        paper-button {
+          height: 32px;
+          font-size: 12px;
+          font-weight: 400;
+        }
+
+        paper-button.primary {
+          font-size: 14px;
+          border-radius: 0;
+          background-color:  #4285f4;
+          color: white;
+          padding: 16px 24px;
+          margin: 6px 0;
+          margin-top: 16px;
+          text-transform: none;
+        }
+
+        h1 {
+          margin: 10px 0;
+          color: #404040;
+          font-size: 24px;
+          font-weight: 500;
+        }
+        
+        @media (max-width: 480px) {
+          table { width: 100%; }
+        }
+
+        @media (min-width: 480px) {
+          table { width: 50%; }
+        }
+      </style>
+
+      <h3>
+        g-element
+      </h3>
+
+      <!-- g-location -->
+      <g-location id="location"></g-location>
+      <div class="card">
+        <h1>g-location</h1>
+        <div>
+          <table>
+            <tr>
+              <td>Latitude:</td>
+              <td>{{locationInfo.latitude}}</td>
+            </tr>
+            <tr>
+              <td>Longitude:</td>
+              <td>{{locationInfo.longitude}}</td>
+            </tr>
+            <tr>
+              <td>Accuracy:</td>
+              <td>{{locationInfo.accuracy}}</td>
+            </tr>
+            <tr>
+              <td>Time:</td>
+              <td>{{locationInfo.time}}</td>
+            </tr>
+          </table>
+        </div>
+        <div style="text-align: right">
+          <paper-button class="primary" on-tap="_requestLocation">Request Location</paper-button>
+        </div>
+      </div>
+
+      <!-- g-notification -->
+      <g-notification id="notification" is-granted="{{isGranted}}"></g-notification>
+      <div class="card">
+        <h1>g-notification</h1>
+        <div>
+          <paper-input id="notificationTitle" required label="Title" value="{{notificationTitle}}"></paper-input>
+          <paper-input id="notificationBody" required label="Body" value="{{notificationBody}}"></paper-input>
+          <paper-input label="Icon" readonly value="{{notificationIcon}}"></paper-input>
+        </div>
+        <div style="text-align: right">
+          <paper-button class="primary" hidden="{{isGranted}}" on-tap="_requestNotification">Request Notification</paper-button>
+          <paper-button class="primary" hidden="{{!isGranted}}" on-tap="_sendNotification">Send Notification</paper-button>
+        </div>
+      </div>
+
+      <!-- g-storage -->
+      <g-storage key="person" data="{{indexedData}}" persisted-data="{{persistedData}}" connected="{{indexedConnected}}"></g-storage>
+      <div class="card">
+        <h1>g-storage</h1>
+        <div> Connected: {{indexedConnected}} </div>
+        <paper-input label="Type and enter to add data" on-keyup="_indexedInputKeyup"></paper-input>
+        <div style="box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); padding: 6px;">
+          <template is="dom-repeat" items="{{persistedData}}">
+            <div>
+              [[item.name]]
+            </div>
+          </template>
+        </div>
+        <div style="text-align: right">
+          <paper-button class="primary" on-tap="_resetStorage">Reset Storage</paper-button>
+        </div>
+      </div>
+
+      <!-- g-mongo-auth -->
+      <div class="card">
+        <h1>g-mongo-auth</h1>
+        <div>
+          Needs mongodb implementation.
+        </div>
+      </div>
+
+      <!-- g-socket-io -->
+      <div class="card">
+        <h1>g-socket-io</h1>
+        <div>Needs socket-io implementation.</div>
+        <div>
+          <a href="http://github.com/tigerlegab/g-element/blob/master/elements/g-socket-io/README.md" target="_blank">
+            https://github.com/tigerlegab/g-element/blob/master/elements/g-socket-io/README.md
+          </a>
+        </div>
+      </div>
+
+      <!-- g-calendar -->
+      <div class="card">
+        <h1>g-calendar</h1>
+        <g-calendar id="calendar"></g-calendar>
+      </div>
+    </template>
+
+    <script type="module">
+      import '@polymer/polymer/polymer-legacy.js';
+      import '@polymer/paper-button/paper-button.js';
+      import '@polymer/paper-input/paper-input.js';
+      import '../../elements/g-location.js';
+      import '../../elements/g-notification.js';
+      import '../../elements/g-storage.js';
+      import '../../elements/g-calendar/g-calendar.js';
+      import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
+
+      Polymer({
+        is: 'x-poly-element',
+
+        properties: {
+          notificationIcon: {
+            type: String,
+            value: "http://nvps.net/wp-content/uploads/2015/07/email-icon.png"
+          },
+          locationInfo: {
+            type: Object,
+            value: {
+              latitude: "'latitude'",
+              longitude: "'longitude'",
+              accuracy: "'accuracy'",
+              time: "'time'"
+            }
+          },
+          indexedData: {
+            type: Array,
+            notify: true,
+            value: [{ name: "John Doe" }, { name: "Peter John" }, { name: "John Jose" }]
+          }
+        },
+
+        _requestLocation() {
+          this.$.location.requestLocation().then(data => {
+            this.locationInfo = data;
+          }).catch(e => {
+            console.warn(e);
+          });
+        },
+
+        _requestNotification() {
+          this.$.notification.requestPermission();
+        },
+
+        _sendNotification() {
+          if (this.$.notificationTitle.validate() && this.$.notificationBody.validate()) {
+            this.$.notification.sendNotification({
+              title: this.notificationTitle,
+              body: this.notificationBody,
+              icon: this.notificationIcon
+            });
+          }
+        },
+
+        _indexedInputKeyup(e) {
+          if (e.keyCode == 13) {
+            this.indexedData.push({ name: e.target.value });
+            this.notifyPath("indexedData", this.indexedData.slice());
+            e.target.value = null;
+          }
+        },
+
+        _resetStorage(e) {
+          this.indexedData = [{ name: "John Doe" }, { name: "Peter John" }, { name: "John Jose" }];
+        }
+
+      });
+    </script>
+  </dom-module>
+
+  <x-poly-element></x-poly-element>
 </body>
 
 </html>

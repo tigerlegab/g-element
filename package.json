@@ -1,19 +1,35 @@
 {
   "name": "g-element",
-  "version": "1.0.0",
-  "description": "Polymer Element used by Authentic System Solutions",
-  "main": "index.html",
+  "version": "2.0.0",
+  "description": "A collection of elements used by Authentic System Solutions",
+  "main": "g-element.js",
+  "author": "Gabriel Jefferson",
+  "license": "MIT",
   "scripts": {
-    "test": "-"
+    "start": "polymer serve"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tigerlegab/g-element.git"
+  "dependencies": {
+    "@polymer/iron-resizable-behavior": "^3.0.1",
+    "@polymer/polymer": "^3.0.0"
+  },
+  "devDependencies": {
+    "@polymer/paper-button": "^3.0.1",
+    "@polymer/paper-input": "^3.0.1",
+    "@webcomponents/webcomponentsjs": "^2.0.0",
+    "fullcalendar": "^3.10.0",
+    "jquery": "^3.3.1",
+    "moment": "^2.24.0"
   },
   "keywords": [
     "auss",
     "g-element"
   ],
-  "author": "Gabriel Jefferson",
-  "license": "MIT"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tigerlegab/g-element.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tigerlegab/g-element/issues"
+  },
+  "homepage": "https://github.com/tigerlegab/g-element#readme"
 }
