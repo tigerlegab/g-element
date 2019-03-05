@@ -6,7 +6,7 @@ import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-res
  * @reference https://github.com/sorin-davidoi/fullcalendar-calendar
  */
 
-window.FullCalendarBehavior = (function () {
+export const FullCalendarBehavior = (function () {
     'use strict';
 
     return {
@@ -86,9 +86,7 @@ window.FullCalendarBehavior = (function () {
         },
 
         ready() {
-            setTimeout(() => {
-                this._calendar = $(this.$.calendar);
-            }, 500);
+            this._calendar = $(this.$.calendar);
         },
 
         /**
@@ -111,10 +109,8 @@ window.FullCalendarBehavior = (function () {
                     calendarOptions[key] = this._callbacks[key];
                 }.bind(this));
 
-                setTimeout(() => {
-                    this._calendar.fullCalendar('destroy');
-                    this._calendar.fullCalendar(calendarOptions);
-                }, 500);
+                this._calendar.fullCalendar('destroy');
+                this._calendar.fullCalendar(calendarOptions);
             }.bind(this));
         },
 

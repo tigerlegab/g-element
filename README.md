@@ -26,6 +26,8 @@ A collection of elements used by Authentic System Solutions.
 
 - [g-calendar](https://github.com/tigerlegab/g-element/tree/master/elements/g-calendar) - A wrapper element for [FullCalendar](https://fullcalendar.io/).
 
+- [g-datatable](https://github.com/tigerlegab/g-element/tree/master/elements/g-datatable) - A responsive data table with Polymer 3 support.
+
 ## Usage
 
 ### Installation

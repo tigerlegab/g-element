@@ -33,12 +33,12 @@
         :host {
           display: block;
           font-family: "Roboto", "Noto", sans-serif;
-          max-width: 676px;
+          max-width: 767px;
           margin: 0 auto;
         }
 
         .card {
-          margin-bottom: 16px; 
+          margin-bottom: 16px;
           padding: 16px;
           color: #757575;
           border-radius: 5px;
@@ -56,7 +56,7 @@
         paper-button.primary {
           font-size: 14px;
           border-radius: 0;
-          background-color:  #4285f4;
+          background-color: #4285f4;
           color: white;
           padding: 16px 24px;
           margin: 6px 0;
@@ -70,13 +70,17 @@
           font-size: 24px;
           font-weight: 500;
         }
-        
+
         @media (max-width: 480px) {
-          table { width: 100%; }
+          table {
+            width: 100%;
+          }
         }
 
         @media (min-width: 480px) {
-          table { width: 50%; }
+          table {
+            width: 50%;
+          }
         }
       </style>
 
@@ -123,13 +127,16 @@
           <paper-input label="Icon" readonly value="{{notificationIcon}}"></paper-input>
         </div>
         <div style="text-align: right">
-          <paper-button class="primary" hidden="{{isGranted}}" on-tap="_requestNotification">Request Notification</paper-button>
-          <paper-button class="primary" hidden="{{!isGranted}}" on-tap="_sendNotification">Send Notification</paper-button>
+          <paper-button class="primary" hidden="{{isGranted}}" on-tap="_requestNotification">Request Notification
+          </paper-button>
+          <paper-button class="primary" hidden="{{!isGranted}}" on-tap="_sendNotification">Send Notification
+          </paper-button>
         </div>
       </div>
 
       <!-- g-storage -->
-      <g-storage key="person" data="{{indexedData}}" persisted-data="{{persistedData}}" connected="{{indexedConnected}}"></g-storage>
+      <g-storage key="person" data="{{indexedData}}" persisted-data="{{persistedData}}"
+        connected="{{indexedConnected}}"></g-storage>
       <div class="card">
         <h1>g-storage</h1>
         <div> Connected: {{indexedConnected}} </div>
@@ -150,7 +157,7 @@
       <div class="card">
         <h1>g-mongo-auth</h1>
         <div>
-          Needs mongodb implementation.
+          Needs nodejs and mongodb implementation.
         </div>
       </div>
 
@@ -159,8 +166,8 @@
         <h1>g-socket-io</h1>
         <div>Needs socket-io implementation.</div>
         <div>
-          <a href="http://github.com/tigerlegab/g-element/blob/master/elements/g-socket-io/README.md" target="_blank">
-            https://github.com/tigerlegab/g-element/blob/master/elements/g-socket-io/README.md
+          <a href="https://github.com/tigerlegab/g-element/blob/master/elements/g-socket-io/README.MD" target="_blank">
+            https://github.com/tigerlegab/g-element/blob/master/elements/g-socket-io/README.MD
           </a>
         </div>
       </div>
@@ -169,6 +176,24 @@
       <div class="card">
         <h1>g-calendar</h1>
         <g-calendar id="calendar"></g-calendar>
+      </div>
+
+      <!-- g-datatable -->
+      <div class="card">
+        <h1>g-datatable</h1>
+        <g-datatable data="{{datatableData}}" selectable multi-selection>
+          <div slot="no-results">No users found.</div>
+
+          <g-datatable-column header="Dessert" property="title" type="String" sortable>
+          </g-datatable-column>
+
+          <g-datatable-column header="Name" property="name" type="Object">
+            <template>
+              <span>[[value.firstname]]</span>
+              <span>[[value.lastname]]</span>
+            </template>
+          </g-datatable-column>
+        </g-datatable>
       </div>
     </template>
 
@@ -180,6 +205,7 @@
       import '../../elements/g-notification.js';
       import '../../elements/g-storage.js';
       import '../../elements/g-calendar/g-calendar.js';
+      import '../../elements/g-datatable/g-datatable.js';
       import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 
       Polymer({
@@ -203,6 +229,17 @@
             type: Array,
             notify: true,
             value: [{ name: "John Doe" }, { name: "Peter John" }, { name: "John Jose" }]
+          },
+          datatableData: {
+            type: Array,
+            value: [
+              { id: 0, title: 'Frozen yogurt', name: { firstname: "Frozen", lastname: "Yogurt" } },
+              { id: 1, title: 'Ice cream sandwich', name: { firstname: "Ice cream", lastname: "Sandwich" } },
+              { id: 2, title: 'Eclair', name: { firstname: "Eclair", lastname: "-" } },
+              { id: 3, title: 'Cupcake', name: { firstname: "Cupcake", lastname: "-" } },
+              { id: 4, title: 'Gingerbread', name: { firstname: "Gingerbread", lastname: "-" } },
+              { id: 5, title: 'Jelly bean', name: { firstname: "Jelly", lastname: "Bean" } }
+            ]
           }
         },
 
