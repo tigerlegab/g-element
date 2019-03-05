@@ -1,0 +1,19 @@
+{
+  "name": "g-element",
+  "version": "1.0.0",
+  "description": "Polymer Element used by Authentic System Solutions",
+  "main": "index.html",
+  "scripts": {
+    "test": "-"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tigerlegab/g-element.git"
+  },
+  "keywords": [
+    "auss",
+    "g-element"
+  ],
+  "author": "Gabriel Jefferson",
+  "license": "MIT"
+}

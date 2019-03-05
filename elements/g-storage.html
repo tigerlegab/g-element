@@ -1,0 +1,266 @@
+<link rel="import" href="../../polymer/polymer.html">
+<dom-module id="g-storage">
+    <script>
+        (function () {
+            'use strict';
+
+            /**
+             *  Sample usage:
+             * <g-storage id="index" on-connected="_connected" on-response="_response"></g-storage>
+             */
+
+            /**
+             *  References:
+             *  https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
+             * 
+             */
+
+            /**
+             * Fired when successfully open or connected to indexed db.
+             *
+             * @event connected
+             * 
+             */
+
+            /**
+             * Fired on results.
+             *
+             * @event response
+             * 
+             */
+
+            Polymer({
+                is: 'g-storage',
+
+                /**
+                 * Initiallize indexed db database
+                 * 
+                 */
+                attached: function () {
+                    var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+                    if (!indexedDB) {
+                        console.warn("Your browser doesn't support a stable version of IndexedDB. Such and such feature will not be available.");
+                    } else {
+                        this._connect(indexedDB);
+                    }
+                },
+
+                /**
+                 * Connect or open indexed db.
+                 *
+                 */
+                _connect(indexedDB) {
+                    const DB_NAME = "g-storage";
+                    const DB_VERSION = 1; // Use a long long for this value (don't use a float)
+                    const DB_STORE_NAME = "client";
+
+                    var request = indexedDB.open(DB_NAME, DB_VERSION);
+                    var self = this;
+                    request.onsuccess = function (event) {
+                        // Better use "this" than "req" to get the result to avoid problems with
+                        // garbage collection.
+                        self.db = this.result;
+                        self.fire('connected');
+                    };
+
+                    request.onerror = function (event) {
+                        console.error("IndexedDb error: ", event.target.errorCode);
+                    };
+
+                    request.onupgradeneeded = function (event) {
+                        event.target.result.createObjectStore(DB_STORE_NAME);
+                    };
+
+                    request.onclose = function (event) {
+                        console.info('The database "' + DB_NAME + '" has unexpectedly closed.');
+                    };
+                },
+
+                /**
+                 * @param {string} store_name
+                 * @param {string} mode either "readonly" or "readwrite"
+                 * 
+                 */
+                _getObjectStore(store_name, mode) {
+                    var tx = this.db.transaction(store_name, mode);
+                    return tx.objectStore(store_name);
+                },
+
+                /** 
+                 * @method _addData
+                 * @param {string/object} data
+                 * @param {string/number} key
+                 * 
+                 */
+                _addData(data, key) {
+                    if (data && key) {
+                        var store = this._getObjectStore("client", "readwrite");
+                        var self = this;
+                        try {
+                            var save = store.add(data, key);
+                            save.onsuccess = function (event) {
+                                self.fire('response', { success: true, action: "add", data: data });
+                            };
+                        } catch (err) {
+                            throw err;
+                        }
+                    }
+                    else {
+                        throw new Error("Parameter 'data' and 'key' is required.");
+                    }
+                },
+
+                /**
+                 * @method _getData
+                 * @param {string/number} key
+                 *
+                 */
+                _getData(key) {
+                    if (key) {
+                        var store = this._getObjectStore("client", "readonly");
+                        var self = this;
+                        try {
+                            var request = store.get(key);
+                            request.onsuccess = function (event) {
+                                var data = event.target.result ? event.target.result : null;
+                                self.fire('response', { success: true, action: "get", data: data });
+                            };
+                        } catch (err) {
+                            throw err;
+                        }
+                    }
+                    else {
+                        throw new Error("Parameter 'key' required. No parameter found.");
+                    }
+                },
+
+                /**
+                 * @method _clearData
+                 *
+                 */
+                _clearData() {
+                    var store = this._getObjectStore('client', 'readwrite');
+                    var self = this;
+                    try {
+                        var req = store.clear();
+                        req.onsuccess = function (evt) {
+                            self.fire('response', { success: true, action: "clear", data: null });
+                        };
+                    } catch (err) {
+                        throw err;
+                    }
+                },
+
+                /***  With Callback functions ***/
+                /** 
+                * 
+                * @method _addByKey
+                * @param {string/object} data
+                * @param {string/number} key
+                * @callback cb
+                * 
+                */
+                _addByKey(data, key, cb) {
+                    if (data && key) {
+                        var store = this._getObjectStore("client", "readwrite");
+                        var self = this;
+                        try {
+                            var save = store.add(data, key);
+                            save.onsuccess = function (event) {
+                                if (cb && typeof (cb) === "function") {
+                                    cb(data);
+                                }
+                            };
+                        } catch (err) {
+                            throw err;
+                        }
+                    }
+                    else {
+                        throw new Error("Parameter 'data' and 'key' is required.");
+                    }
+                },
+
+                /** 
+                * 
+                * @method _updateByKey
+                * @param {string/object} data
+                * @param {string/number} key
+                * @callback cb
+                * 
+                */
+                _updateByKey(data, key, cb) {
+                    if (data && key) {
+                        var store = this._getObjectStore("client", "readwrite");
+                        var self = this;
+                        try {
+                            var save = store.put(data, key);
+                            save.onsuccess = function (event) {
+                                if (cb && typeof (cb) === "function") {
+                                    cb(data);
+                                }
+                            };
+                        } catch (err) {
+                            throw err;
+                        }
+                    }
+                    else {
+                        throw new Error("Parameter 'data' and 'key' is required.");
+                    }
+                },
+
+                /**
+                 * @method _getByKey
+                 * @param {string/number} key
+                 * @callback cb
+                 *
+                 */
+                _getByKey(key, cb) {
+                    if (key) {
+                        var store = this._getObjectStore("client", "readonly");
+                        var self = this;
+                        try {
+                            var request = store.get(key);
+                            request.onsuccess = function (event) {
+                                var data = event.target.result ? event.target.result : null;
+                                if (cb && typeof (cb) === "function") {
+                                    cb(data);
+                                }
+                            };
+                        } catch (err) {
+                            throw err;
+                        }
+                    }
+                    else {
+                        throw new Error("Parameter 'key' required. No parameter found.");
+                    }
+                },
+
+                /**
+                 * @method _deleteByKey
+                 * @param {string/number} key
+                 * @callback cb
+                 * 
+                 */
+                _deleteByKey(key, cb) {
+                    if (key) {
+                        var store = this._getObjectStore("client", "readwrite");
+                        try {
+                            var request = store.delete(key);
+                            request.onsuccess = function (event) {
+                                if (cb && typeof (cb) === "function") {
+                                    cb();
+                                }
+                            };
+                        } catch (err) {
+                            throw err;
+                        }
+                    }
+                    else {
+                        throw new Error("Parameter 'key' required. No parameter found.");
+                    }
+                }
+
+            });
+        })();
+    </script>
+</dom-module>

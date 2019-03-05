@@ -1,0 +1,143 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="g-storage.html">
+
+<dom-module id="g-mongo-auth">
+    <template>
+        <g-storage id="index" on-connected="_indexConnected" on-response="_indexResponse"></g-storage>
+    </template>
+    <script>
+        (function () {
+            'use strict';
+
+            /**
+            *  Sample usage:
+            * <g-mongo-auth 
+            *   id="auth" 
+            *   path="{{path}}" 
+            *   status-known="{{statusknown}}" 
+            *   user="{{user}}" 
+            *   on-error="_handleError"></g-mongo-auth>
+            * 
+            *** sign in user ***
+            * this.$.auth.authenticate = {
+            *   email: email,
+            *   password: password   
+            * }
+            * this.$.auth.signIn();
+            *
+            *** sign out user ***
+            * this.$.auth.signOut();
+            * 
+            */
+
+            /**
+            * Fired when there's an error signing in a user.
+            *
+            * @event error
+            * 
+            */
+
+            Polymer({
+                is: 'g-mongo-auth',
+                properties: {
+
+                    /**
+                    * The url of your login api.
+                    */
+                    path: {
+                        type: String,
+                        value: null
+                    },
+
+                    /**
+                    * The data to authenticate to server.
+                    */
+                    authenticate: {
+                        type: Object,
+                        value: null
+                    },
+
+                    /**
+                    * When true, login status can be determined by checking `user` property.
+                    */
+                    statusKnown: {
+                        type: Boolean,
+                        value: false,
+                        readOnly: true,
+                        notify: true
+                    },
+
+                    /**
+                    * The currently-authenticated user with user-related metadata.
+                    */
+                    user: {
+                        type: Object,
+                        value: null,
+                        readOnly: true,
+                        notify: true
+                    },
+                },
+
+                /**
+                * SignIn a client in the server.
+                */
+                signIn() {
+                    if (!this.path || !this.authenticate) {
+                        throw new Error("'path' and 'authenticate' required.");
+                    }
+                    else {
+                        const self = this;
+                        const requestOptions = {
+                            method: 'POST',
+                            body: JSON.stringify(this.authenticate),
+                            headers: {
+                                "Content-type": "application/json; charset=UTF-8"
+                            }
+                        };
+
+                        fetch(this.path, requestOptions)
+                            .then(response => { return response.json(); })
+                            .then(response => {
+                                if (response.success) self.$.index._addData(response.user, 'user');
+                                else self.fire('error', response.msg);
+                            })
+                            .catch(error => {
+                                self.fire('error', error.msg);
+                            });
+                    }
+                },
+
+                /**
+                * SignOut a client
+                */
+                signOut() {
+                    this.$.index._clearData();
+                },
+
+                /**
+                * on-connect indexed-db
+                * get user data
+                */
+                _indexConnected() {
+                    this.$.index._getData('user');
+                },
+
+                /**
+                * indexed-db response
+                */
+                _indexResponse(e) {
+                    if (e.detail.success) {
+                        this._setUser(e.detail.data);
+                        if (!e.detail.data) this._setStatusKnown(false);
+                        else this._setStatusKnown(true);
+                    }
+                    else {
+                        this._setUser(null);
+                        this._setStatusKnown(false);
+                    }
+                },
+
+            });
+        })();
+    </script>
+</dom-module>

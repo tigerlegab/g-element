@@ -1,0 +1,171 @@
+<link rel="import" href="../../polymer/polymer.html">
+<dom-module id="g-location">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+
+            #overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                z-index: 2;
+                background: rgba(8, 8, 8, 0.8);
+                display: none;
+            }
+
+            #info {
+                background: white;
+                margin: 6px auto;
+                margin-left: 6px;
+                margin-right: 6px;
+                padding: 16px;
+                max-width: 800px;
+            }
+        </style>
+
+        <div id="overlay">
+            <div id="info">
+                <b>For Security Reasons</b>, please enable and allow GPS for this application.
+                <br> Thank you!
+            </div>
+        </div>
+
+    </template>
+    <script>
+        (function () {
+            'use strict';
+
+            /**
+            *
+            * @event response
+            * 
+            */
+            Polymer({
+                is: 'g-location',
+                properties: {
+                    /**
+                    * None
+                    */
+                },
+
+                /**
+                * @method requestLocation
+                * 
+                */
+                requestLocation: function () {
+                    if (navigator.geolocation && navigator.permissions) {
+                        var self = this;
+                        navigator.permissions.query({ name: 'geolocation' }).then(function (result) {
+                            if (result.state == 'granted') {
+                                self.$.overlay.style.display = "none";
+                                self._getCurrentPosition(function (data) {
+                                    self.fire('response', data);
+                                });
+                            }
+                            else if (result.state == 'prompt') {
+                                self.$.overlay.style.display = "flex";
+                                self._getCurrentPosition(function (data) {
+                                    self.fire('response', data);
+                                });
+                            }
+                            else if (result.state == 'denied') {
+                                self.$.overlay.style.display = "flex";
+                            }
+
+                            result.onchange = function () {
+                                if (result.state == "granted") {
+                                    self.$.overlay.style.display = "none";
+                                }
+
+                                if (result.state == "denied") {
+                                    alert("For security reasons, please allow GPS for this application.");
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        this.fire('response', { success: false, message: "Geolocation is not supported by this browser." });
+                    }
+                },
+
+                /**
+                * @method requestLocationCallback
+                * @callback cb
+                * 
+                */
+                requestLocationCallback: function (cb) {
+                    if (navigator.geolocation && navigator.permissions) {
+                        if (cb && typeof (cb) === "function") {
+                            var self = this;
+                            navigator.permissions.query({ name: 'geolocation' }).then(function (result) {
+                                if (result.state == 'granted') {
+                                    self.$.overlay.style.display = "none";
+                                    self._getCurrentPosition(function (data) {
+                                        cb(data);
+                                    });
+                                }
+                                else if (result.state == 'prompt') {
+                                    self.$.overlay.style.display = "flex";
+                                    self._getCurrentPosition(function (data) {
+                                        cb(data);
+                                    });
+                                }
+                                else if (result.state == 'denied') {
+                                    self.$.overlay.style.display = "flex";
+                                }
+
+                                result.onchange = function () {
+                                    if (result.state == "granted") {
+                                        self.$.overlay.style.display = "none";
+                                        // self._getCurrentPosition(self);
+                                    }
+
+                                    if (result.state == "denied") {
+                                        alert("For security reasons, please allow GPS for this application.");
+                                    }
+                                }
+                            });
+                        } else {
+                            throw new Error("Callback must be a function.");
+                        }
+                    } else {
+                        cb({ success: false, message: "Geolocation is not supported by this browser." });
+                    }
+                },
+
+                /**
+                * @method _getCurrentPosition
+                * @callback cb
+                * 
+                */
+                _getCurrentPosition: function (cb) {
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        cb({
+                            success: true,
+                            data: {
+                                latitude: position.coords.latitude,
+                                longitude: position.coords.longitude,
+                                accuracy: position.coords.accuracy,
+                                time: position.timestamp
+                            }
+                        });
+                    }, (error) => {
+                        cb({
+                            success: false,
+                            message: error
+                        });
+                    });
+                }
+
+            });
+        })();
+    </script>
+</dom-module>
