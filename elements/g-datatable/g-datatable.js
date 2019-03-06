@@ -2,6 +2,8 @@ import '@polymer/polymer/polymer-legacy.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
+import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
+import { IronScrollTargetBehavior } from '@polymer/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
 import { CollectionHelpers } from '../../src/collectionHelpers.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
 import '@polymer/iron-media-query/iron-media-query.js';
@@ -11,12 +13,11 @@ import './g-datatable-column.js';
 
 Polymer({
     _template: html`
-        <style include="g-datatable-styles">
-        </style>
+        <style include="g-datatable-styles"></style>
 
-       <iron-media-query query="(max-width: [[responseWidth]])" query-matches="{{mobileView}}"></iron-media-query>
+        <iron-media-query query="(max-width: [[responseWidth]])" query-matches="{{mobileView}}"></iron-media-query>
 
-       <div id="container">
+        <div id="container">
 			<table mobile-view$="[[mobileView]]">
 				<thead>
 					<tr mobile-view$="[[mobileView]]">
@@ -38,7 +39,11 @@ Polymer({
 							</th>
 						</template>
                     </tr>
-                    
+                    <tr class="progress" data-progress$="[[progress]]" mobile-view$="[[mobileView]]">
+						<th colspan$="[[_numberOfColumnsPlusOne(_columns.splices)]]">
+                            <paper-progress indeterminate></paper-progress>
+						</th>
+					</tr>
 					<tr hidden$="[[!_noItemsVisible(_rowKeys.splices)]]" mobile-view$="[[mobileView]]">
 						<th colspan$="[[_numberOfColumnsPlusOne(_columns.splices)]]" style="text-align:center;">
 							<slot name="no-results">No data found.</slot>
@@ -82,7 +87,6 @@ Polymer({
         _columns: {
             type: Array
         },
-
         /**
          * Array of objects containing the data to be shown in the table.
          *
@@ -95,7 +99,16 @@ Polymer({
             value: [],
             notify: true
         },
-
+        /**
+         * Fecth data from the given url using fetch api.
+         *
+         * @attribute dataUrl
+         * @type String
+         */
+        dataUrl: {
+            type: String,
+            observer: '_dataUrlChanged'
+        },
         /**
          * Whether to show checkboxes on the left to allow row selection.
          *
@@ -106,7 +119,6 @@ Polymer({
         selectable: {
             type: Boolean
         },
-
         /**
          * Whether to allow selection of more than one row.
          *
@@ -118,7 +130,6 @@ Polymer({
             type: Boolean,
             value: false
         },
-
         /**
          * If `multi-selection` then this contains an array of selected row keys.
          *
@@ -131,7 +142,6 @@ Polymer({
             notify: true,
             value: []
         },
-
         /**
          * If `multi-selection` is off then this contains the key of the selected row.
          *
@@ -142,7 +152,6 @@ Polymer({
             type: Object,
             notify: true
         },
-
         /**
          * If `multi-selection` is off then this contains the selected row.
          *
@@ -154,7 +163,6 @@ Polymer({
             notify: true,
             computed: '_getByKey(selectedKey)'
         },
-
         /**
          * If `multi-selection` is on then this contains an array of the selected rows.
          *
@@ -166,15 +174,19 @@ Polymer({
             notify: true,
             computed: '_getSelectedItems(selectedKeys.splices)'
         },
-
-        _rowKeys: {
-            type: Array
+        /**
+         * Whether to show the progress bar. As the progress bar is often not used in standalone
+         * `<g-datatable>'s the `<paper-progress>` element isn't included by default and needs to be
+         * manually imported.
+         *
+         * @attribute progress
+         * @type Boolean
+         * @default false
+         */
+        progress: {
+            type: Boolean,
+            value: false
         },
-
-        _partialSelection: {
-            type: Boolean
-        },
-
         /**
          * Response width to show datatable on mobile devices
          *
@@ -186,8 +198,46 @@ Polymer({
             type: String,
             value: '767px'
         },
-
+        /**
+         * overflow, fixed or 'dynamic-columns'
+         *
+         * @attribute resizeBehavior
+         * @type String
+         * @default 'overflow'
+         */
+        resizeBehavior: {
+            type: String,
+            value: 'overflow',
+            reflectToAttribute: true
+        },
+        /**
+         * Fix column header to the top of the page on scroll
+         *
+         * @attribute headerFixed
+         * @type Boolean
+         * @default false
+         */
+        headerFixed: {
+            type: Boolean,
+            reflectToAttribute: true,
+            value: false
+        },
+        /**
+         * @private
+         */
+        _rowKeys: Array,
+        _partialSelection: Boolean,
+        _theadDistanseToTop: Number,
         mobileView: Boolean
+    },
+
+    behaviors: [
+        IronResizableBehavior,
+        IronScrollTargetBehavior
+    ],
+
+    listeners: {
+        'iron-resize': '_resizeHandler'
     },
 
     observers: [
@@ -201,6 +251,16 @@ Polymer({
         this._observer = dom(this).observeNodes(function (info) {
             this._queryAndSetColumns();
         });
+    },
+
+    _dataUrlChanged(url) {
+        if (url) {
+            this.set('data', []);
+            fetch(url, { method: "GET" })
+                .then(response => { return response.json(); })
+                .then(response => { this.set('data', response); })
+                .catch(error => { this.fire('fetch-error', error); });
+        }
     },
 
     _queryAndSetColumns() {
@@ -529,5 +589,55 @@ Polymer({
 
     _setPartialSelection() {
         this.set('_partialSelection', this._someChecked());
-    }
+    },
+
+    /**
+     * Scroll listener from IronScrollTargetBehavior with logic
+     */
+    _scrollHandler() {
+        if (!this.mobileView && this.headerFixed && this._theadDistanseToTop) {
+            var tableHead = this.shadowRoot.querySelector('thead');
+            if (this._scrollTop > this._theadDistanseToTop && !tableHead.classList.contains("fixedToTop")) {
+                /*Get first table row*/
+                var firstRow = this.shadowRoot.querySelector('tbody tr');
+                var firstRowCells = dom(firstRow).querySelectorAll('.bound-cell');
+                if (firstRowCells.length === 0) return;
+                var headerWidth = getComputedStyle(tableHead).width;
+                var tableHeadRow = tableHead.children[0];
+                var columns = dom(tableHeadRow).querySelectorAll('.column');
+                /*Set right width for each column header*/
+                Array.prototype.forEach.call(columns, function (item, index) {
+                    item.style.width = firstRowCells[index].style.width = item.offsetWidth + "px";
+                });
+                if (this._headerHeight) {
+                    tableHead.style.top = this._headerHeight + "px";
+                }
+                this.$.container.style.marginTop = tableHead.offsetHeight + "px";
+                tableHead.style.width = headerWidth;
+                tableHead.classList.add("fixedToTop");
+            } else if (this._scrollTop < this._theadDistanseToTop && tableHead.classList.contains("fixedToTop")) {
+                tableHead.style.width = "auto";
+                tableHead.style.top = 0;
+                this.$.container.style.marginTop = 0;
+                tableHead.classList.remove("fixedToTop");
+            }
+        }
+    },
+
+    /**
+     * Set scroll target and coordinates to top
+     */
+    _resizeHandler() {
+        if (this.headerFixed && !this._theadDistanseToTop) {
+            var thead = this.shadowRoot.querySelector('thead');
+            var parentNodeName = this.parentNode.nodeName;
+            if (parentNodeName.toLowerCase() === 'paper-datatable-card' && this.parentNode.headerFixed) {
+                var header = dom(this.parentNode.root).querySelector('#topBlock');
+                this._headerHeight = header.offsetHeight;
+                this._theadDistanseToTop = thead.getBoundingClientRect().top - this._headerHeight;
+            } else {
+                this._theadDistanseToTop = thead.getBoundingClientRect().top;
+            }
+        }
+    },
 });

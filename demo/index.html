@@ -34,7 +34,7 @@
     import '../elements/g-wizard-steps.js';
     // import '../elements/g-socket-io/g-socket-io.js';
     import '../elements/g-calendar/g-calendar.js';
-    import '../elements/g-datatable/g-datatable.js';
+    import '../elements/g-datatable/g-datatable-card.js';
 
     const template = html`
       <custom-style>
@@ -182,19 +182,14 @@
     <h3>g-datatable</h3>
     <demo-snippet>
       <template>
-        <g-datatable id="datatable" selectable multi-selection>
-          <div slot="no-results">No contacts found.</div>
-          <g-datatable-column header="Name" property="name" type="String"></g-datatable-column>
-          <g-datatable-column header="City" property="city" type="String"></g-datatable-column>
-        </g-datatable>
-
-        <script>
-          fetch('./contacts.json', { method: "GET" })
-            .then(response => { return response.json(); })
-            .then(response => {
-              document.getElementById('datatable').data = response.splice(0, 5);
-            });
-        </script>
+        <g-datatable-card id="datatableCard" data-url="./contacts.json" header="Contacts" page-size="5">
+          <g-datatable selectable multi-selection>
+            <div slot="no-results">No contacts found.</div>
+            <g-datatable-column header="No" property="index" type="Number"></g-datatable-column>
+            <g-datatable-column header="Name" property="name" type="String"></g-datatable-column>
+            <g-datatable-column header="City" property="city" type="String"></g-datatable-column>
+          </g-datatable>
+        </g-datatable-card>
       </template>
     </demo-snippet>
   </div>

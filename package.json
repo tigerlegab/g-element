@@ -1,6 +1,6 @@
 {
   "name": "g-element",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "A collection of elements used by Authentic System Solutions",
   "main": "index.html",
   "author": "Gabriel Jefferson",
@@ -15,6 +15,7 @@
     "@polymer/iron-list": "^3.0.2",
     "@polymer/iron-media-query": "^3.0.1",
     "@polymer/iron-resizable-behavior": "^3.0.1",
+    "@polymer/iron-scroll-target-behavior": "^3.0.1",
     "@polymer/paper-checkbox": "^3.1.0",
     "@polymer/paper-icon-button": "^3.0.2",
     "@polymer/paper-input": "^3.0.1",
@@ -22,10 +23,11 @@
     "@polymer/polymer": "^3.0.0"
   },
   "devDependencies": {
-    "@polymer/iron-demo-helpers": "^3.0.2",
+    "@polymer/iron-demo-helpers": "^3.1.0",
     "@webcomponents/webcomponentsjs": "^2.2.7"
   },
   "keywords": [
+    "polymer-3",
     "auss",
     "g-element"
   ],

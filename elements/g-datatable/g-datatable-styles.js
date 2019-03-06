@@ -38,10 +38,10 @@ $_documentContainer.innerHTML = `<dom-module id="g-datatable-styles">
 
     tr td,
     tr th {
-        border-bottom: 1px solid var(--paper-datatable-divider-color, var(--divider-color));
+        border-bottom: 1px solid var(--g-datatable-divider-color, var(--divider-color));
         padding: 6px 28px 6px 28px;
         box-sizing: border-box;
-        @apply --paper-datatable-cell-styles;
+        @apply --g-datatable-cell-styles;
     }
 
     td {
@@ -72,7 +72,7 @@ $_documentContainer.innerHTML = `<dom-module id="g-datatable-styles">
         transition: transform .2s linear, width .2s linear, color .2s linear;
         color: rgba(0, 0, 0, .26);
         width: 0px;
-        @apply --paper-datatable-column-header-sort-icon-hover;
+        @apply --g-datatable-column-header-sort-icon-hover;
     }
 
     th[data-sortable] {
@@ -87,7 +87,7 @@ $_documentContainer.innerHTML = `<dom-module id="g-datatable-styles">
     th[data-sortable]:hover {
         padding-left: 4px;
         color: rgba(0, 0, 0, .87);
-        @apply --paper-datatable-column-header-sorted;
+        @apply --g-datatable-column-header-sorted;
     }
 
     th[data-sortable][data-sorted] iron-icon,
@@ -97,7 +97,7 @@ $_documentContainer.innerHTML = `<dom-module id="g-datatable-styles">
 
     th[data-sortable][data-sorted] iron-icon.sort {
         color: rgba(0, 0, 0, .87);
-        @apply --paper-datatable-column-header-sorted;
+        @apply --g-datatable-column-header-sorted;
     }
 
     th[data-sortable]:not([data-sorted]) iron-icon {
@@ -121,7 +121,7 @@ $_documentContainer.innerHTML = `<dom-module id="g-datatable-styles">
     }
 
     th.column {
-        @apply --paper-datatable-column-header;
+        @apply --g-datatable-column-header;
     }
 
     tr th span {
@@ -131,7 +131,7 @@ $_documentContainer.innerHTML = `<dom-module id="g-datatable-styles">
     td.bound-cell {
         font-size: 13px;
         color: rgba(0, 0, 0, .87);
-        @apply --paper-datatable-cell;
+        @apply --g-datatable-cell;
     }
 
     td.bound-cell div span {
@@ -148,7 +148,7 @@ $_documentContainer.innerHTML = `<dom-module id="g-datatable-styles">
     }
 
     td.bound-cell[data-edit-icon] iron-icon.editable {
-        color: var(--paper-datatable-icon-color, rgba(0, 0, 0, .54));
+        color: var(--g-datatable-icon-color, rgba(0, 0, 0, .54));
         width: 18px;
         display: inline-block;
         padding-left: 7px;
@@ -185,19 +185,19 @@ $_documentContainer.innerHTML = `<dom-module id="g-datatable-styles">
     }
 
     td:last-of-type {
-        @apply --paper-datatable-cell-last;
+        @apply --g-datatable-cell-last;
     }
 
     th:last-of-type {
-        @apply --paper-datatable-column-header-last;
+        @apply --g-datatable-column-header-last;
     }
 
     tr[data-selected] td {
-        background: var(--paper-datatable-row-selection-color, var(--paper-grey-100));
+        background: var(--g-datatable-row-selection-color, var(--paper-grey-100));
     }
 
     tr:hover td {
-        background: var(--paper-datatable-row-hover-color, var(--paper-grey-200));
+        background: var(--g-datatable-row-hover-color, var(--paper-grey-200));
     }
 
     tbody tr:last-of-type td {
@@ -206,34 +206,28 @@ $_documentContainer.innerHTML = `<dom-module id="g-datatable-styles">
 
     tbody td .array-item {
         display: inline-block;
-        @apply --paper-datatable-array-item;
+        @apply --g-datatable-array-item;
     }
 
     tbody td .class-1 {
-        @apply --paper-datatable-class-1;
+        @apply --g-datatable-class-1;
     }
 
     tbody td .class-2 {
-        @apply --paper-datatable-class-2;
+        @apply --g-datatable-class-2;
     }
 
     tbody td .class-3 {
-        @apply --paper-datatable-class-3;
+        @apply --g-datatable-class-3;
     }
 
     tbody td .class-4 {
-        @apply --paper-datatable-class-4;
+        @apply --g-datatable-class-4;
     }
 
     tbody td .class-5 {
-        @apply --paper-datatable-class-5;
+        @apply --g-datatable-class-5;
     }
-
-    /* progress: */
-
-    /* table tr.progress {
-
-    } */
 
     table tr.progress th paper-progress {
         height: 0px;
@@ -255,15 +249,15 @@ $_documentContainer.innerHTML = `<dom-module id="g-datatable-styles">
     }
 
     paper-checkbox {
-        --paper-checkbox-unchecked-color: var(--paper-datatable-checkbox-border-color, var(--primary-text-color));
-        --paper-checkbox-checked-color: var(--paper-datatable-checkbox-color, var(--accent-color));
-        @apply --paper-datatable-checkbox;
+        --paper-checkbox-unchecked-color: var(--g-datatable-checkbox-border-color, var(--primary-text-color));
+        --paper-checkbox-checked-color: var(--g-datatable-checkbox-color, var(--accent-color));
+        @apply --g-datatable-checkbox;
     }
 
     th paper-checkbox {
-        --paper-checkbox-unchecked-color: var(--paper-datatable-header-checkbox-border-color, var(--primary-text-color));
-        --paper-checkbox-checked-color: var(--paper-datatable-header-checkbox-color, var(--accent-color));
-        @apply --paper-datatable-header-checkbox;
+        --paper-checkbox-unchecked-color: var(--g-datatable-header-checkbox-border-color, var(--primary-text-color));
+        --paper-checkbox-checked-color: var(--g-datatable-header-checkbox-color, var(--accent-color));
+        @apply --g-datatable-header-checkbox;
     }
 
     .partialSelectionContainer {
@@ -278,7 +272,7 @@ $_documentContainer.innerHTML = `<dom-module id="g-datatable-styles">
     .partialSelection {
         width: 6px;
         height: 2px;
-        background: var(--paper-datatable-header-checkbox-border-color, rgba(0, 0, 0, .54));
+        background: var(--g-datatable-header-checkbox-border-color, rgba(0, 0, 0, .54));
         border-radius: 1px;
         transition: transform .1s linear;
         transform: scale(0) rotate(-45deg);

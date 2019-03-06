@@ -4,9 +4,8 @@ A responsive data table with Polymer 3 support. <br />
 From the original `paper-datatable` - [David-Mulder paper-datatable](https://github.com/David-Mulder/paper-datatable) and Polymer 2 `bwt-datatable` - [Bluewatertracks bwt-datatable](https://github.com/bluewatertracks/bwt-datatable).
 
 ### Todos
-1. Implement `paper-datatable-card`
-2. Sorting
-3. Filtering/Search
+1. Sorting
+2. Filtering/Search
 
 ## Usage
 
