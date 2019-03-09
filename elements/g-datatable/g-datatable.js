@@ -2,8 +2,6 @@ import '@polymer/polymer/polymer-legacy.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
-import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
-import { IronScrollTargetBehavior } from '@polymer/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
 import { CollectionHelpers } from '../../src/collectionHelpers.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
 import '@polymer/iron-media-query/iron-media-query.js';
@@ -17,7 +15,7 @@ Polymer({
 
         <iron-media-query query="(max-width: [[responseWidth]])" query-matches="{{mobileView}}"></iron-media-query>
 
-        <div id="container">
+        <div id="container" fixed-header$="[[headerFixed]]">
 			<table mobile-view$="[[mobileView]]">
 				<thead>
 					<tr mobile-view$="[[mobileView]]">
@@ -50,9 +48,9 @@ Polymer({
 						</th>
 					</tr>
 				</thead>
-
-				<tbody mobile-view$="[[mobileView]]">
-					<template id="rowRepeat" is="dom-repeat" items="[[_rowKeys]]" as="rowKey" on-dom-change="_restructureData">
+                
+                <tbody mobile-view$="[[mobileView]]">
+                    <template id="rowRepeat" is="dom-repeat" items="[[_rowKeys]]" as="rowKey" on-dom-change="_restructureData">
                         <tr data-key$="[[rowKey]]" mobile-view$="[[mobileView]]" data-selected$="[[_isRowSelected(rowKey, selectedKeys.splices)]]" style$="[[_customRowStyle(rowKey)]]">
                             <template is="dom-if" if="[[selectable]]">
                                 <td on-tap="_cellTapped" mobile-view$="[[mobileView]]">
@@ -69,8 +67,8 @@ Polymer({
                                 </td>
                             </template>
                         </tr>
-					</template>
-				</tbody>
+                    </template>
+                </tbody>
 			</table>
 		</div>
     `,
@@ -199,18 +197,6 @@ Polymer({
             value: '767px'
         },
         /**
-         * overflow, fixed or 'dynamic-columns'
-         *
-         * @attribute resizeBehavior
-         * @type String
-         * @default 'overflow'
-         */
-        resizeBehavior: {
-            type: String,
-            value: 'overflow',
-            reflectToAttribute: true
-        },
-        /**
          * Fix column header to the top of the page on scroll
          *
          * @attribute headerFixed
@@ -219,30 +205,38 @@ Polymer({
          */
         headerFixed: {
             type: Boolean,
-            reflectToAttribute: true,
             value: false
+        },
+        /**
+         * This is required for headerFixed to work
+         *
+         * @attribute headerFixed
+         * @type String
+         */
+        height: {
+            type: String
+        },
+        /**
+         * Indicates wheter the query match in iron media query
+         *
+         * @attribute mobileView
+         * @type Boolean
+         */
+        mobileView: {
+            type: Boolean,
+            notify: true
         },
         /**
          * @private
          */
         _rowKeys: Array,
         _partialSelection: Boolean,
-        _theadDistanseToTop: Number,
-        mobileView: Boolean
-    },
-
-    behaviors: [
-        IronResizableBehavior,
-        IronScrollTargetBehavior
-    ],
-
-    listeners: {
-        'iron-resize': '_resizeHandler'
     },
 
     observers: [
         '_setRowKeys(data.splices)',
-        '_setPartialSelection(selectedKeys.splices, data.*)'
+        '_setPartialSelection(selectedKeys.splices, data.*)',
+        '_setFixedTableBodyHeight(mobileView, height)'
     ],
 
     ready() {
@@ -591,53 +585,9 @@ Polymer({
         this.set('_partialSelection', this._someChecked());
     },
 
-    /**
-     * Scroll listener from IronScrollTargetBehavior with logic
-     */
-    _scrollHandler() {
-        if (!this.mobileView && this.headerFixed && this._theadDistanseToTop) {
-            var tableHead = this.shadowRoot.querySelector('thead');
-            if (this._scrollTop > this._theadDistanseToTop && !tableHead.classList.contains("fixedToTop")) {
-                /*Get first table row*/
-                var firstRow = this.shadowRoot.querySelector('tbody tr');
-                var firstRowCells = dom(firstRow).querySelectorAll('.bound-cell');
-                if (firstRowCells.length === 0) return;
-                var headerWidth = getComputedStyle(tableHead).width;
-                var tableHeadRow = tableHead.children[0];
-                var columns = dom(tableHeadRow).querySelectorAll('.column');
-                /*Set right width for each column header*/
-                Array.prototype.forEach.call(columns, function (item, index) {
-                    item.style.width = firstRowCells[index].style.width = item.offsetWidth + "px";
-                });
-                if (this._headerHeight) {
-                    tableHead.style.top = this._headerHeight + "px";
-                }
-                this.$.container.style.marginTop = tableHead.offsetHeight + "px";
-                tableHead.style.width = headerWidth;
-                tableHead.classList.add("fixedToTop");
-            } else if (this._scrollTop < this._theadDistanseToTop && tableHead.classList.contains("fixedToTop")) {
-                tableHead.style.width = "auto";
-                tableHead.style.top = 0;
-                this.$.container.style.marginTop = 0;
-                tableHead.classList.remove("fixedToTop");
-            }
-        }
-    },
-
-    /**
-     * Set scroll target and coordinates to top
-     */
-    _resizeHandler() {
-        if (this.headerFixed && !this._theadDistanseToTop) {
-            var thead = this.shadowRoot.querySelector('thead');
-            var parentNodeName = this.parentNode.nodeName;
-            if (parentNodeName.toLowerCase() === 'paper-datatable-card' && this.parentNode.headerFixed) {
-                var header = dom(this.parentNode.root).querySelector('#topBlock');
-                this._headerHeight = header.offsetHeight;
-                this._theadDistanseToTop = thead.getBoundingClientRect().top - this._headerHeight;
-            } else {
-                this._theadDistanseToTop = thead.getBoundingClientRect().top;
-            }
+    _setFixedTableBodyHeight(mobileView, height) {
+        if (this.headerFixed && !mobileView && height) {
+            this.shadowRoot.querySelector('#container').style.height = height;
         }
     },
 });

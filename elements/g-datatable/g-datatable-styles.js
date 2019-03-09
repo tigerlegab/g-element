@@ -30,6 +30,14 @@ $_documentContainer.innerHTML = `<dom-module id="g-datatable-styles">
     :host([resize-behavior='fixed']) td {
         overflow: hidden;
     }
+    
+    #container[fixed-header] { overflow-x: auto; }
+    #container[fixed-header] thead th { 
+        position: sticky;
+        top: 0;
+        background: #fff;
+        z-index: 1;
+    }
 
     table {
         border-spacing: 0px;
@@ -240,7 +248,7 @@ $_documentContainer.innerHTML = `<dom-module id="g-datatable-styles">
 
     table tr.progress th {
         padding: 0px;
-        height: 1px;
+        height: 0px;
         border-bottom: 0px;
     }
 

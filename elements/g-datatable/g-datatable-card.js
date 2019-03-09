@@ -2,8 +2,6 @@ import '@polymer/polymer/polymer-legacy.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
-import { IronResizableBehavior } from '@polymer/iron-resizable-behavior/iron-resizable-behavior.js';
-import { IronScrollTargetBehavior } from '@polymer/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
 import '@polymer/paper-styles/element-styles/paper-material-styles.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
 import '@polymer/paper-icon-button/paper-icon-button.js';
@@ -65,7 +63,7 @@ Polymer({
                 #selectionToolbar> ::content paper-icon-button, .toolbar> ::content paper-icon-button,
                 #selectionToolbar> ::content paper-icon, .toolbar> ::content paper-icon,
                 #selectionToolbar> ::content iron-icon, .toolbar> ::content iron-icon {
-                    color: var(--g-datatable-selection-toolbar-icon-color, rgba(0, 0, 0, .54));
+                    color: var(--g-datatable-selection-toolbar-icon-color, var(--accent-color));
                 }
 
                 #toolbar-main ::content paper-icon-button,
@@ -107,12 +105,8 @@ Polymer({
                     };
                 }
 
-                .fixedToTop {
-                    background: #fff;
-                    position: fixed !important;
-                    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
-                    top: 0;
-                    z-index: 2;
+                #datatable-holder {
+                    overflow-x: auto;
                 }
             </style>
         </custom-style>
@@ -127,7 +121,9 @@ Polymer({
                 </div>
                 <div id="selectionToolbar" class="horizontal center layout fit" data-visible$="[[_selectedToolbarVisible]]">
                     <div class="flex selectionHeader">
-                        <span>[[_numberOfSelectedItems]]</span> selected
+                        <slot name="selection-header">
+                            <span>[[_numberOfSelectedItems]]</span> selected
+                        </slot>
                     </div>
                     <div class="toolbar" data-visible$="[[_singleSelectToolbarVisible]]">
                         <slot name="toolbar-select-single"></slot>
@@ -140,7 +136,7 @@ Polymer({
                     </div>
                 </div>
             </div>
-            <div>
+            <div id="datatable-holder">
                 <slot></slot>
             </div>
             <div class="horizontal center layout" id="bottomBlock">
@@ -149,7 +145,7 @@ Polymer({
                     <slot name="footer-tool"></slot>
                 </div>
                 <span>
-                    <span>[[_getRangeStart(page, pageSize)]]</span> -
+                    <span>[[_getRangeStart(page, pageSize, _numberOfItems)]]</span> -
                     <span>[[_getRangeEnd(page, pageSize, _numberOfItems)]]</span> of&nbsp;
                     <span>[[_numberOfItems]]</span>
                 </span>
@@ -180,8 +176,7 @@ Polymer({
          * @required
          */
         data: {
-            type: Array,
-            value: []
+            type: Array
         },
         /**
          * Fecth data from the given url using fetch api.
@@ -225,8 +220,18 @@ Polymer({
          */
         headerFixed: {
             type: Boolean,
-            reflectToAttribute: true,
             value: false
+        },
+        /**
+         * This is required for headerFixed to work
+         *
+         * @height headerFixed
+         * @type String
+         * @default 442px
+         */
+        height: {
+            type: String,
+            value: '442px'
         },
         /**
          * datatable element holder
@@ -258,25 +263,52 @@ Polymer({
         _singleSelectToolbarVisible: Boolean,
         _multiSelectToolbarVisible: Boolean,
         _numberOfSelectedItems: Number,
-        _headerDistanseToTop: Number,
-    },
-
-    behaviors: [
-        IronResizableBehavior,
-        IronScrollTargetBehavior
-    ],
-
-    listeners: {
-        'iron-resize': '_resizeHandler'
     },
 
     observers: [
-        '_setVisibleData(data, _pageIndex)'
+        'setVisibleData(data.splices, _pageIndex)',
+        'setDatatableFixedHeight(height)'
     ],
 
     ready() {
         this._datatable = dom(this).querySelector("g-datatable");
         this._datatable.addEventListener("selection-changed", this._setSelectedToolbarVisible.bind(this));
+        this.setDatatableFixedHeight();
+    },
+
+    /**
+     * Set current visble data for datatable
+     * Call this function to reset datatable visible data
+     */
+    setVisibleData() {
+        if (this.data && this._datatable) {
+            const _dataCache = JSON.parse(JSON.stringify(this.data));
+            if (this._numberOfSelectedItems && this._numberOfSelectedItems > 0) this.deselectAll();
+            if (_dataCache.length > 0) this._datatable.data = _dataCache.splice(this._pageIndex, this.pageSize);
+            else this._datatable.data = [];
+        }
+    },
+
+    /**
+     * If headerFixed is `true` set datatable height
+     * Call this function to manually update the datatable height
+     */
+    setDatatableFixedHeight() {
+        if (this.headerFixed && this.height && this._datatable) {
+            var holder = this.shadowRoot.querySelector('#datatable-holder');
+            if (!this._datatable.headerFixed) {
+                var header = this.shadowRoot.querySelector('#topBlock');
+                holder.style.height = this.height;
+                holder.onscroll = () => {
+                    var stop = holder.scrollTop - (holder.clientTop || 0);
+                    if (stop == 0) header.style.borderBottom = "none";
+                    if (stop > 0) header.style.borderBottom = "1px solid #ddd";
+                };
+            }
+            if (this._datatable.headerFixed && !this._datatable.height) {
+                this._datatable.height = this.height;
+            }
+        }
     },
 
     /**
@@ -292,25 +324,9 @@ Polymer({
         }
     },
 
-    /**
-     * Set current visble data for datatable
-     */
-    _setVisibleData(data, _pageIndex) {
-        if (data && data.length > 0) {
-            const _dataCache = JSON.parse(JSON.stringify(data));
-            if (this._numberOfSelectedItems && this._numberOfSelectedItems > 0) {
-                if (this._datatable.multiSelection) this.deselectAll();
-                else {
-                    this._datatable.selectedKey = null;
-                    this._datatable.selectedKeys = [];
-                }
-            }
-            this._datatable.data = _dataCache.splice(_pageIndex, this.pageSize);
-        }
-    },
-
     _getRangeStart() {
-        return (this.page - 1) * this.pageSize + 1;
+        if (this._numberOfItems > 0) return (this.page - 1) * this.pageSize + 1;
+        return 0;
     },
 
     _getRangeEnd() {
@@ -379,7 +395,11 @@ Polymer({
      * Deselect all items
      */
     deselectAll() {
-        this._datatable.deselectAll(false);
+        if (this._datatable.multiSelection) this._datatable.deselectAll(false);
+        else {
+            this._datatable.selectedKey = null;
+            this._datatable.selectedKeys = [];
+        }
         this._setSelectedToolbarVisible();
     },
 
@@ -391,45 +411,4 @@ Polymer({
         this._datatable.select(item, false);
         this._setSelectedToolbarVisible();
     },
-
-    /**
-     * Deselect the specific item
-     * @param item
-     */
-    deselect(item) {
-        this._datatable.deselect(item, false);
-        this._setSelectedToolbarVisible();
-    },
-
-    /**
-     * Scroll listener from IronScrollTargetBehavior
-     */
-    _scrollHandler() {
-        if (this.headerFixed && this._headerDistanseToTop) {
-            var paperDatatable = dom(this).querySelector("g-datatable");
-            var header = this.shadowRoot.querySelector('#topBlock');
-            var headerStyles = getComputedStyle(header);
-            if (this._scrollTop > this._headerDistanseToTop && !header.classList.contains("fixedToTop")) {
-                header.style.width = headerStyles.width;
-                paperDatatable.style.paddingTop = header.offsetHeight + "px";
-                header.classList.add("fixedToTop");
-            } else if (this._scrollTop < this._headerDistanseToTop && header.classList.contains("fixedToTop")) {
-                header.style.width = "auto";
-                header.style.top = 0;
-                paperDatatable.style.paddingTop = 0;
-                header.classList.remove("fixedToTop");
-            }
-        }
-    },
-
-    /**
-     * Set scroll target and check coordinates to top
-     */
-    _resizeHandler() {
-        if (this.headerFixed && !this._headerDistanseToTop) {
-            var header = this.shadowRoot.querySelector('#topBlock');
-            this._headerDistanseToTop = header.getBoundingClientRect().top;
-        };
-    },
-
 });

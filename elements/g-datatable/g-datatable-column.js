@@ -32,7 +32,6 @@ Polymer({
             type: String,
             notify: true,
         },
-
         /**
          * The property to be used from `data` for this column
          *
@@ -41,7 +40,6 @@ Polymer({
          * @required
          */
         property: String,
-
         /**
          * The type of the property (can be 'String', 'Number', 'Array', 'Date', etc.)
          * Used for sorting and default display
@@ -54,7 +52,6 @@ Polymer({
             type: String,
             value: 'String'
         },
-
         /**
          * If `type` is an `Array` and the array consists of `Object`s it's a common need
          * to display a single property of every object (in non-editable mode).
@@ -63,7 +60,6 @@ Polymer({
          * @type String
          */
         arrayDisplayProp: String,
-
         /**
          * Style to be applied to every cell.
          *
@@ -74,7 +70,6 @@ Polymer({
             type: String,
             value: ''
         },
-
         /**
          * Convenience attribute to align the header and cell content (e.g. 'center')
          *
@@ -86,7 +81,6 @@ Polymer({
             type: String,
             value: 'left'
         },
-
         /**
          * Style to be applied to the header.
          *
@@ -103,7 +97,6 @@ Polymer({
                 return 'text-align:' + alignment + ';min-width:' + minWidth + ';' + styleString;
             }
         },
-
         /**
          * If you have `undefined`'s in your `data` this method can be used to
          * set a default, thus preventing auto-saves from triggering.
@@ -112,7 +105,6 @@ Polymer({
          * @type Object
          */
         default: Object,
-
         /**
          * Can be overwritten to manually format the value in a non-editable state
          *
@@ -123,7 +115,6 @@ Polymer({
          * @default see code
          */
         formatValue: Function,
-
         /**
          * Removing and adding columns entirely from the DOM is a bit hard, so instead there is this
          * convenience method to entirely disable a column.
@@ -136,7 +127,6 @@ Polymer({
             type: Boolean,
             observer: '_requeryColumnList'
         },
-
         /**
          * Convenience attribute to set min-width
          *
@@ -182,6 +172,7 @@ Polymer({
         }
         var value = this._cast(data);
         if (this.type.toLowerCase() == 'string') {
+            if (window.innerWidth < 768 && value.length > 60) return value.slice(0, 62) + "...";
             return value;
         } else if (this.type.toLowerCase() == 'number') {
             return value;

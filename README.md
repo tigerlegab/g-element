@@ -28,6 +28,8 @@ A collection of elements used by Authentic System Solutions.
 
 - [g-datatable](https://github.com/tigerlegab/g-element/tree/master/elements/g-datatable) - A responsive data table with Polymer 3 support.
 
+- [g-file-upload](https://github.com/tigerlegab/g-element/tree/master/elements/g-file-upload) - A wrapper element for input type file with client side image compress using [compressorjs](https://github.com/fengyuanchen/compressorjs).
+
 ## Usage
 
 ### Installation
