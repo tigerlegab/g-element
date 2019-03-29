@@ -1,6 +1,6 @@
 {
   "name": "g-element",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "A collection of elements used by Authentic System Solutions",
   "main": "index.html",
   "author": "Gabriel Jefferson",
@@ -10,17 +10,21 @@
   },
   "dependencies": {
     "@polymer/iron-iconset-svg": "^3.0.1",
+    "@polymer/polymer": "^3.2.0"
+  },
+  "devDependencies": {
     "@polymer/iron-image": "^3.0.1",
     "@polymer/iron-list": "^3.0.2",
     "@polymer/iron-media-query": "^3.0.1",
+    "@polymer/iron-collapse": "^3.0.1",
+    "@polymer/neon-animation": "^3.0.1",
     "@polymer/paper-checkbox": "^3.1.0",
+    "@polymer/paper-dialog-behavior": "^3.0.1",
     "@polymer/paper-fab": "^3.0.1",
     "@polymer/paper-icon-button": "^3.0.2",
     "@polymer/paper-input": "^3.0.1",
+    "@polymer/paper-item": "^3.0.1",
     "@polymer/paper-spinner": "^3.0.2",
-    "@polymer/polymer": "^3.0.0"
-  },
-  "devDependencies": {
     "@polymer/iron-demo-helpers": "^3.1.0",
     "@webcomponents/webcomponentsjs": "^2.2.7"
   },

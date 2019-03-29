@@ -172,17 +172,15 @@ Polymer({
         }
         var value = this._cast(data);
         if (this.type.toLowerCase() == 'string') {
-            if (window.innerWidth < 768 && value.length > 60) return value.slice(0, 62) + "...";
+            if (window.innerWidth < 640 && value.length > 55) return value.slice(0, 55) + "...";
             return value;
         } else if (this.type.toLowerCase() == 'number') {
             return value;
         } else if (this.type.toLowerCase() == 'boolean') {
             return value ? 'Yes' : 'No';
         } else if (this.type.toLowerCase() == 'date') {
-            var prependZero = function (val) {
-                return val < 10 ? '0' + val : val;
-            }
-            return value.getUTCFullYear() + '/' + prependZero(value.getUTCMonth() + 1) + '/' + prependZero(value.getUTCDate()) + '&nbsp;' + prependZero(value.getUTCHours()) + ':' + prependZero(value.getUTCMinutes()) + ':' + prependZero(value.getUTCSeconds());
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            return ("0" + value.getDate()).slice(-2) + "-" + monthNames[value.getMonth()] + "-" + value.getFullYear();
         } else {
             console.warn('Complex objects should implement their own template or format-value function.', data);
             return '?';

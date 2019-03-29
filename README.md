@@ -30,6 +30,14 @@ A collection of elements used by Authentic System Solutions.
 
 - [g-file-upload](https://github.com/tigerlegab/g-element/tree/master/elements/g-file-upload) - A wrapper element for input type file with client side image compress using [compressorjs](https://github.com/fengyuanchen/compressorjs).
 
+- [g-signature](https://github.com/tigerlegab/g-element/tree/master/elements/g-signature) - A wrapper element for [signature_pad](https://github.com/szimek/signature_pad).
+
+- [g-dialog](https://github.com/tigerlegab/g-element/tree/master/elements) - A polymer 3 material dialog with a few extra conveniences.
+
+- [g-expansion-panel](https://github.com/tigerlegab/g-element/tree/master/elements) - A polymer 3 material design expansion panel with header and collapsible content.
+
+- [g-icon-item](https://github.com/tigerlegab/g-element/tree/master/elements) - A [paper-icon-item](https://github.com/PolymerElements/paper-item) without its behavior intended for UI designing.
+
 ## Usage
 
 ### Installation

@@ -156,7 +156,8 @@ class GImageUpload extends PolymerElement {
     _fileChanged(file) {
         const URL = window.URL || window.webkitURL;
         this.image = file ? file : null;
-        this.src = file ? URL.createObjectURL(file) : "";
+        if (!this._src) this._src = this.src;
+        this.src = file ? URL.createObjectURL(file) : this._src;
     }
 
     validate() {

@@ -1,5 +1,7 @@
 import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 import { FlattenedNodesObserver } from '@polymer/polymer/lib/utils/flattened-nodes-observer.js';
+import { timeOut } from '@polymer/polymer/lib/utils/async.js';
+import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 
 class GFileUpload extends PolymerElement {
@@ -152,8 +154,17 @@ class GFileUpload extends PolymerElement {
     }
 
     _onClick(event) {
-        this.$.upload.click();
-        event.preventDefault();
+        this._debounceJob = Debouncer.debounce(this._debounceJob, timeOut.after(50), () => {
+            var clickEvent = new MouseEvent("click", {
+                "view": window,
+                "bubbles": true,
+                "composed": true,
+                "cancelable": false
+            });
+
+            this.$.upload.dispatchEvent(clickEvent);
+            event.preventDefault();
+        });
     }
 
     _filesChanged(event) {

@@ -36,6 +36,10 @@
     import '../elements/g-calendar/g-calendar.js';
     import '../elements/g-datatable/g-datatable-card.js';
     import '../elements/g-file-upload/g-image-upload.js';
+    import '../elements/g-signature/g-signature.js';
+    import '../elements/g-dialog.js';
+    import '../elements/g-expansion-panel.js';
+    import '../elements/g-icon-item.js';
 
     const template = html`
       <custom-style>
@@ -212,6 +216,47 @@
 
         <h5>Image upload</h5>
         <g-image-upload></g-image-upload>
+      </template>
+    </demo-snippet>
+
+    <h3>g-signature</h3>
+    <demo-snippet>
+      <template>
+        <g-signature width="400" height="200"></g-signature>
+      </template>
+    </demo-snippet>
+
+    <h3>g-dialog</h3>
+    <demo-snippet>
+      <template>
+        <g-dialog modal id="dialog">
+          <h2>My Header</h2>
+          <span>Content</span>
+          <div class="buttons">
+            <paper-button dialog-dismiss>Cancel</paper-button>
+            <paper-button dialog-confirm autofocus>Accept</paper-button>
+          </div>
+        </g-dialog>
+        </script>
+      </template>
+    </demo-snippet>
+
+    <h3>g-expansion-panel</h3>
+    <demo-snippet>
+      <template>
+        <g-expansion-panel header="Lorem Ipsum" opened>
+          Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit...
+        </g-expansion-panel>
+      </template>
+    </demo-snippet>
+
+    <h3>g-icon-item</h3>
+    <demo-snippet>
+      <template>
+        <g-icon-item style="border: 1px solid #ddd;">
+          <g-avatar label="Lorem Ipsum" two-chars slot="item-icon"></g-avatar>
+          Lorem Ipsum
+        </g-icon-item>
       </template>
     </demo-snippet>
   </div>

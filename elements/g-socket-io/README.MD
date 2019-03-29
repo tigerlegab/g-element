@@ -4,11 +4,6 @@ A wrapper element for [Socket.IO](https://socket.io/).
 
 ## Usage
 
-### Install dependency
-```
-npm install --save socket.io-client
-```
-
 ### Import element
 ```
 import 'g-element/elements/g-socket-io/g-socket-io.js';

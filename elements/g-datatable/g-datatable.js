@@ -437,6 +437,7 @@ Polymer({
             this.splice('selectedKeys', i, 1);
         } else {
             this.set('selectedKey', null);
+            this.set('selectedKeys', []);
         }
         if (notify) this._fireCustomEvent(this, "selection-changed", { deselected: [key] });
     },

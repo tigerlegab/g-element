@@ -4,9 +4,8 @@ import { html } from '@polymer/polymer/lib/utils/html-tag.js';
 import { dom } from '@polymer/polymer/lib/legacy/polymer.dom.js';
 import '@polymer/paper-styles/element-styles/paper-material-styles.js';
 import '@polymer/iron-flex-layout/iron-flex-layout-classes.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
 import './g-datatable.js';
-import '../g-icons.js';
+import './g-datatable-range.js';
 
 Polymer({
     _template: html`
@@ -77,34 +76,6 @@ Polymer({
                     @apply --paper-font-common-base;
                 }
 
-                #bottomBlock {
-                    height: 56px;
-                    padding: 0px 6px;
-                    border-top: 1px solid var(--g-datatable-divider-color, var(--divider-color));
-                    color: var(--g-datatable-navigation-bar-text-color, rgba(0, 0, 0, .54));
-                    align-items: center;
-                    font-size: 12px;
-                    text-align: center;
-                    font-weight: 500;
-                    @apply --g-datatable-navigation-bar;
-                }
-
-                #bottomBlock paper-dropdown-menu {
-                    vertical-align: middle;
-                    margin-right: 18px;
-
-                    --paper-input-container-underline: { display: none; };
-                    --paper-input-container-input: {
-                        text-align: right;
-                        font-size: 12px;
-                        font-weight: 500;
-                        color: var(--g-datatable-navigation-bar-text-color, rgba(0, 0, 0, .54));
-                    };
-                    --paper-dropdown-menu-icon: {
-                        color: var(--g-datatable-navigation-bar-text-color, rgba(0, 0, 0, .54));
-                    };
-                }
-
                 #datatable-holder {
                     overflow-x: auto;
                 }
@@ -139,21 +110,9 @@ Polymer({
             <div id="datatable-holder">
                 <slot></slot>
             </div>
-            <div class="horizontal center layout" id="bottomBlock">
-                <div class="flex"></div>
-                <div>
-                    <slot name="footer-tool"></slot>
-                </div>
-                <span>
-                    <span>[[_getRangeStart(page, pageSize, _numberOfItems)]]</span> -
-                    <span>[[_getRangeEnd(page, pageSize, _numberOfItems)]]</span> of&nbsp;
-                    <span>[[_numberOfItems]]</span>
-                </span>
-                <paper-icon-button icon="g-icons:first-page" on-tap="firstPage" disabled="[[_prevPageDisabled(page)]]"></paper-icon-button>
-                <paper-icon-button icon="g-icons:prev-page" on-tap="prevPage" disabled="[[_prevPageDisabled(page)]]"></paper-icon-button>
-                <paper-icon-button icon="g-icons:next-page" on-tap="nextPage" disabled="[[_nextPageDisabled(page, pageSize, _numberOfItems)]]"></paper-icon-button>
-                <paper-icon-button icon="g-icons:last-page" on-tap="lastPage" disabled="[[_nextPageDisabled(page, pageSize, _numberOfItems)]]"></paper-icon-button>
-            </div>
+           <slot name="footer">
+            <g-datatable-range data="[[data]]" visible-data="{{_visibleData}}" page-size="[[pageSize]]" page="{{page}}"></g-datatable-range>
+           </slot>
         </div>
     `,
 
@@ -169,7 +128,7 @@ Polymer({
          */
         header: String,
         /**
-         * Array of objects containing the data to be shown in the table.
+         * Array or Array of objects containing the data to be shown in the table.
          *
          * @attribute data
          * @type Array
@@ -241,24 +200,6 @@ Polymer({
         _datatable: {
             type: Object
         },
-        /**
-         * Total number of items
-         * 
-         * @private
-         */
-        _numberOfItems: {
-            type: Number,
-            computed: '_setNumberOfItems(data.length)'
-        },
-        /**
-         * Current page index
-         * 
-         * @private
-         */
-        _pageIndex: {
-            type: Number,
-            value: 0
-        },
         _selectedToolbarVisible: Boolean,
         _singleSelectToolbarVisible: Boolean,
         _multiSelectToolbarVisible: Boolean,
@@ -266,7 +207,7 @@ Polymer({
     },
 
     observers: [
-        'setVisibleData(data.splices, _pageIndex)',
+        'setVisibleData(_visibleData.splices)',
         'setDatatableFixedHeight(height)'
     ],
 
@@ -281,33 +222,10 @@ Polymer({
      * Call this function to reset datatable visible data
      */
     setVisibleData() {
-        if (this.data && this._datatable) {
-            const _dataCache = JSON.parse(JSON.stringify(this.data));
+        if (this._visibleData && this._datatable) {
+            this._datatable.data = [];
             if (this._numberOfSelectedItems && this._numberOfSelectedItems > 0) this.deselectAll();
-            if (_dataCache.length > 0) this._datatable.data = _dataCache.splice(this._pageIndex, this.pageSize);
-            else this._datatable.data = [];
-        }
-    },
-
-    /**
-     * If headerFixed is `true` set datatable height
-     * Call this function to manually update the datatable height
-     */
-    setDatatableFixedHeight() {
-        if (this.headerFixed && this.height && this._datatable) {
-            var holder = this.shadowRoot.querySelector('#datatable-holder');
-            if (!this._datatable.headerFixed) {
-                var header = this.shadowRoot.querySelector('#topBlock');
-                holder.style.height = this.height;
-                holder.onscroll = () => {
-                    var stop = holder.scrollTop - (holder.clientTop || 0);
-                    if (stop == 0) header.style.borderBottom = "none";
-                    if (stop > 0) header.style.borderBottom = "1px solid #ddd";
-                };
-            }
-            if (this._datatable.headerFixed && !this._datatable.height) {
-                this._datatable.height = this.height;
-            }
+            if (this._visibleData.length > 0) this._datatable.data = this._visibleData;
         }
     },
 
@@ -324,53 +242,28 @@ Polymer({
         }
     },
 
-    _getRangeStart() {
-        if (this._numberOfItems > 0) return (this.page - 1) * this.pageSize + 1;
-        return 0;
-    },
-
-    _getRangeEnd() {
-        return Math.min((this.page * this.pageSize), this._numberOfItems);
-    },
-
     /**
-     * Navigate to the next page
+     * If headerFixed is `true` set datatable height
+     * Call this function to manually update the datatable height
      */
-    nextPage() {
-        this.set("page", this.page + 1);
-        this.set("_pageIndex", this._pageIndex + this.pageSize);
-    },
-
-    /**
-     * Navigate to the previous page
-     */
-    prevPage() {
-        this.set("page", this.page - 1);
-        this.set("_pageIndex", this._pageIndex - this.pageSize);
-    },
-
-    /**
-     * Navigate to the first page
-     */
-    firstPage() {
-        this.set("page", 1);
-        this.set("_pageIndex", 0);
-    },
-
-    /**
-     * Navigate to the last page
-     */
-    lastPage() {
-        this.set("page", Math.ceil(this._numberOfItems / this.pageSize));
-        this.set("_pageIndex", this.data.length - this.pageSize);
-    },
-
-    _prevPageDisabled() {
-        return this.page == 1;
-    },
-
-    _nextPageDisabled() {
-        return this.page * this.pageSize >= this._numberOfItems;
+    setDatatableFixedHeight() {
+        var holder = this.shadowRoot.querySelector('#datatable-holder');
+        if (this.headerFixed && this.height && this._datatable) {
+            if (!this._datatable.headerFixed) {
+                var header = this.shadowRoot.querySelector('#topBlock');
+                holder.style.height = this.height;
+                holder.onscroll = () => {
+                    var stop = holder.scrollTop - (holder.clientTop || 0);
+                    if (stop == 0) header.style.borderBottom = "none";
+                    if (stop > 0) header.style.borderBottom = "1px solid #ddd";
+                };
+            }
+            if (this._datatable.headerFixed && !this._datatable.height) {
+                this._datatable.height = this.height;
+            }
+        } else {
+            if (holder.getAttribute("style")) holder.removeAttribute("style");
+        }
     },
 
     _setSelectedToolbarVisible() {
@@ -387,19 +280,20 @@ Polymer({
         }
     },
 
-    _setNumberOfItems(length) {
-        return length;
-    },
-
     /**
      * Deselect all items
      */
     deselectAll() {
-        if (this._datatable.multiSelection) this._datatable.deselectAll(false);
-        else {
-            this._datatable.selectedKey = null;
-            this._datatable.selectedKeys = [];
-        }
+        this._datatable.deselectAll(false);
+        this._setSelectedToolbarVisible();
+    },
+
+    /**
+     * Deselect specific item
+     * @param item
+     */
+    deselect(item) {
+        this._datatable.deselect(item, false);
         this._setSelectedToolbarVisible();
     },
 
@@ -410,5 +304,5 @@ Polymer({
     select(item) {
         this._datatable.select(item, false);
         this._setSelectedToolbarVisible();
-    },
+    }
 });
