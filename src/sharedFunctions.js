@@ -8,11 +8,14 @@ export {
     addCommas,
     generatePushID,
     chatTimeAndDate,
-    smooth_scroll_to
+    smooth_scroll_to,
+    arrayBufferToBase64
 }
 
+const fullMonthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const fullWeekNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const weekNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 function capitalizeString(str) {
     var lower = str.toLowerCase();
@@ -80,17 +83,22 @@ function getAge(date) {
     }
 }
 
-function formatDate(date, format) {
+function formatDate(date, format = "", useFullFormat = false) {
     date = new Date(date);
     switch (format) {
         case 'dd-month-yyyy':
-            return ("0" + date.getDate()).slice(-2) + "-" + monthNames[date.getMonth()] + "-" + date.getFullYear();
+            return ("0" + date.getDate()).slice(-2) + "-" + (useFullFormat ? fullMonthNames[date.getMonth()] : monthNames[date.getMonth()]) + "-" + date.getFullYear();
         case 'month dd, yyyy':
-            return monthNames[date.getMonth()] + " " + ("0" + date.getDate()).slice(-2) + ", " + date.getFullYear();
+            return (useFullFormat ? fullMonthNames[date.getMonth()] : monthNames[date.getMonth()]) + " " + ("0" + date.getDate()).slice(-2) + ", " + date.getFullYear();
         case 'yyyy-mm-dd':
             return date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
         case 'mm/dd/yyyy':
             return ("0" + (date.getMonth() + 1)).slice(-2) + "/" + ("0" + date.getDate()).slice(-2) + "/" + date.getFullYear();
+        case 'month yyyy':
+            return (useFullFormat ? fullMonthNames[date.getMonth()] : monthNames[date.getMonth()]) + " " + date.getFullYear();
+        case 'fullWeek':
+            return fullWeekNames[date.getDay()];
+            break;
         default:
             console.warn('Invalid format ' + format);
     }
@@ -242,4 +250,14 @@ function smooth_scroll_to(element, target, duration) {
 
         setTimeout(scroll_frame, 0);
     });
+}
+
+function arrayBufferToBase64(buffer) {
+    var binary = '';
+    var bytes = new Uint8Array(buffer);
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return "data:image/png;base64," + window.btoa(binary);
 }

@@ -3,12 +3,6 @@ import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { ScriptLoader } from '../../src/scriptLoader.js';
 
 /**
- * Fired on socket.io connection.
- *
- * @event connect
- */
-
-/**
  * Fired when the client call a method 'call'.
  *
  * @event response
@@ -32,7 +26,7 @@ new ScriptLoader([
              * sends 'true' if element successfully attached
              * boolean
              */
-            elementAttached: {
+            isAttached: {
                 type: Boolean,
                 value: false,
                 readOnly: true,
@@ -68,7 +62,7 @@ new ScriptLoader([
          */
         attached() {
             this.fire('attach');
-            this._setElementAttached(true);
+            this._setIsAttached(true);
         },
 
         /**

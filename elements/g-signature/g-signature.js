@@ -11,14 +11,7 @@ import SignaturePad from '../../src/signature_pad.js';
 Polymer({
     _template: html`
         <style>
-        :host {
-            display: block;
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-        }
+        :host { display: block; }
         </style>
 
         <canvas id="canvas"></canvas>
@@ -140,19 +133,22 @@ Polymer({
             onBegin: this._onBegin.bind(this),
             onEnd: this._onEnd.bind(this)
         });
-        if (this.image) this.signaturePad.fromDataURL(this.image);
     },
 
-    scaleCanvas(width, height) {
-        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    scaleCanvas(width, height, hard = false) {
+        // const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        const ratio = 1;
         this.$.canvas.width = width * ratio;
         this.$.canvas.height = height * ratio;
         this.$.canvas.getContext("2d").scale(ratio, ratio);
 
         if (this.signaturePad) {
-            this.signaturePad.clear();
-            this.image = null;
-            this._setEmpty(this.signaturePad.isEmpty());
+            if (hard) this.clear();
+            else {
+                this.signaturePad.clear();
+                if (this.image) this.signaturePad.fromDataURL(this.image);
+                this._setEmpty(this.signaturePad.isEmpty());
+            }
         }
     },
 

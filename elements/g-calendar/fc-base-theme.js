@@ -31,7 +31,7 @@ $_documentContainer.innerHTML = `<dom-module id="fc-base-theme">
     .fc.fc-bootstrap3 a,
     .ui-widget .fc-event,
     a.fc-more {
-        text-decoration: none
+        text-decoration: none;
     }
 
     .fc {
@@ -348,7 +348,8 @@ $_documentContainer.innerHTML = `<dom-module id="fc-base-theme">
 
     .fc-event,
     .fc-event:hover {
-        color: #fff
+        color: #fff;
+        cursor: pointer;
     }
 
     .fc-not-allowed,
@@ -663,7 +664,8 @@ $_documentContainer.innerHTML = `<dom-module id="fc-base-theme">
     }
 
     .fc-unthemed .fc-list-item:hover td {
-        background-color: #f5f5f5
+        background-color: #f5f5f5;
+        cursor: pointer;
     }
 
     .ui-widget .fc-disabled-day {

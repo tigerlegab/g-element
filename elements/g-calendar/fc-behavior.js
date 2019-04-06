@@ -34,7 +34,6 @@ export const FullCalendarBehavior = (function () {
              * @type Object
              */
             _calendar: { type: Object, notify: true },
-
             /**
              * Options passed to FullCalendar.
              *
@@ -47,9 +46,19 @@ export const FullCalendarBehavior = (function () {
                     return {};
                 },
             },
-
+            /**
+             * Indicates whether the calendar has been initialize.
+             *
+             * @type Boolean
+             * @readOnly
+             */
+            initiated: {
+                type: Boolean,
+                value: false,
+                notify: true,
+                readOnly: true
+            },
             _originalCallbacks: { type: Object },
-
             _callbacks: {
                 type: Object,
                 readOnly: true,
@@ -87,6 +96,7 @@ export const FullCalendarBehavior = (function () {
 
         ready() {
             this._calendar = $(this.$.calendar);
+            this._setInitiated(true);
         },
 
         /**

@@ -341,8 +341,7 @@ Polymer({
 
                     if (cell) {
                         cell.removeAttribute('data-empty');
-                        var prop = cell.dataColumn.property;
-                        var data = rowData[prop];
+                        var data = self._getValue(rowData, cell.dataColumn.property);
                         cell.setAttribute('data-row-key', row.dataset.key);
                         cell.dataBoundColumn = cell.dataColumn;
 
@@ -376,7 +375,6 @@ Polymer({
                             //added text to span
                             cell.querySelector('p').textContent = self._columns[index].header;
                             cell.querySelector('span').textContent = cell.dataColumn._formatValue(data);
-                            // cell.textContent = data;
                         }
                     }
                 });
@@ -543,6 +541,13 @@ Polymer({
         if (ev.model.column) {
             this._toggleSelection(rowModel.rowKey);
         }
+    },
+
+    _getValue(obj, path) {
+        for (var i = 0, path = path.split('.'), len = path.length; i < len; i++) {
+            obj = obj[path[i]];
+        };
+        return obj;
     },
 
     _getKeyByItem(item) {

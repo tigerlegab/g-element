@@ -36,6 +36,12 @@ Polymer({
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none; 
             @apply --g-signature-pad-p;
         }
 
@@ -59,7 +65,7 @@ Polymer({
         </style>
 
         <div id="wrapper" class="wrapper">
-            <template is="dom-if" if="[[!readOnly]]">
+            <template is="dom-if" if="[[!readonly]]">
                 <p hidden="[[hideText]]">
                     <slot name="display-text">Sign here</slot>
                 </p>
@@ -76,17 +82,17 @@ Polymer({
                              empty="{{_empty}}">
                 </g-signature>
             </template>
-            <template is="dom-if" if="[[readOnly]]">
-                <iron-image sizing="cover" src="[[image]]"></iron-image>
+            <template is="dom-if" if="[[readonly]]">
+                <iron-image sizing="contain" src="[[image]]"></iron-image>
             </template>
         </div>
         <div hidden="[[hideFooter]]" class="footer">
             <slot name="footer">
                 <div style="flex: 2">
-                    <paper-input readonly="[[readOnly]]" always-float-label label="Signed by" value="{{signedBy}}"></paper-input>
+                    <paper-input readonly="[[readonly]]" always-float-label label="Signed by" value="{{signedBy}}"></paper-input>
                 </div>
-                <div hidden="[[readOnly]]" style="flex: 1; text-align: right;">
-                    <paper-button on-tap="_clear">Clear</paper-button>
+                <div hidden="[[readonly]]" style="flex: 1; text-align: right;">
+                    <paper-button on-tap="clear">Clear</paper-button>
                 </div>
             </slot>
         </div>
@@ -198,7 +204,10 @@ Polymer({
         /**
          * Indicates whether an image is editable
          */
-        readOnly: Boolean
+        readonly: {
+            type: Boolean,
+            value: false
+        }
     },
 
     behaviors: [IronResizableBehavior],
@@ -218,21 +227,21 @@ Polymer({
     },
 
     _onIronResize() {
-        if (!this.readOnly) {
+        if (!this.readonly) {
             const canvas = this.shadowRoot.querySelector("g-signature");
             if (canvas) canvas.scaleCanvas(this.$.wrapper.offsetWidth, this.$.wrapper.offsetHeight);
         } else {
             const image = this.shadowRoot.querySelector("iron-image");
             if (image) {
-                image.width = this.$.wrapper.offsetWidth;
+                image.width = '100%';
                 image.height = this.$.wrapper.offsetHeight;
             }
         }
     },
 
-    _clear() {
+    clear() {
         const canvas = this.shadowRoot.querySelector("g-signature");
-        if (canvas) canvas.scaleCanvas(this.$.wrapper.offsetWidth, this.$.wrapper.offsetHeight);
+        if (canvas) canvas.scaleCanvas(this.$.wrapper.offsetWidth, this.$.wrapper.offsetHeight, true);
     },
 
     _computedBinary(e) { return arrayBufferToBase64(e.data); },
