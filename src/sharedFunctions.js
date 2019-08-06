@@ -96,9 +96,8 @@ function formatDate(date, format = "", useFullFormat = false) {
             return ("0" + (date.getMonth() + 1)).slice(-2) + "/" + ("0" + date.getDate()).slice(-2) + "/" + date.getFullYear();
         case 'month yyyy':
             return (useFullFormat ? fullMonthNames[date.getMonth()] : monthNames[date.getMonth()]) + " " + date.getFullYear();
-        case 'fullWeek':
-            return fullWeekNames[date.getDay()];
-            break;
+        case 'weekname':
+            return (useFullFormat ? fullWeekNames[date.getDay()] : weekNames[date.getDay()]);
         default:
             console.warn('Invalid format ' + format);
     }
