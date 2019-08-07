@@ -120,13 +120,24 @@ Polymer({
             notify: true
         },
         /**
+         * Set manually the numberOfItems.
+         * 
+         * @attribute numberOfItems
+         * @default 0
+         * @type Number
+         */
+        numberOfItems: {
+            type: Number,
+            value: 0
+        },
+        /**
          * Total number of items
          * 
          * @private
          */
         _numberOfItems: {
             type: Number,
-            computed: '_setNumberOfItems(data.length)'
+            computed: '_setNumberOfItems(data.length, numberOfItems)'
         },
         /**
          * Current page index
@@ -173,7 +184,8 @@ Polymer({
     },
 
     _getRangeEnd() {
-        return Math.min((this.page * this.pageSize), this._numberOfItems);
+        if (this._numberOfItems > 0) return Math.min((this.page * this.pageSize), this._numberOfItems);
+        return 0;
     },
 
     /**
@@ -182,6 +194,7 @@ Polymer({
     nextPage() {
         this.set("page", this.page + 1);
         this.set("_pageIndex", this._pageIndex + this.pageSize);
+        this.fire('next-page', this._pageIndex);
     },
 
     /**
@@ -190,6 +203,7 @@ Polymer({
     prevPage() {
         this.set("page", this.page - 1);
         this.set("_pageIndex", this._pageIndex - this.pageSize);
+        this.fire('prev-page', this._pageIndex);
     },
 
     /**
@@ -198,6 +212,7 @@ Polymer({
     firstPage() {
         this.set("page", 1);
         this.set("_pageIndex", 0);
+        this.fire('first-page', this._pageIndex);
     },
 
     /**
@@ -206,6 +221,7 @@ Polymer({
     lastPage() {
         this.set("page", Math.ceil(this._numberOfItems / this.pageSize));
         this.set("_pageIndex", (this.page - 1) * this.pageSize);
+        this.fire('last-page', this._pageIndex);
     },
 
     _prevPageDisabled() {
@@ -216,7 +232,9 @@ Polymer({
         return this.page * this.pageSize >= this._numberOfItems;
     },
 
-    _setNumberOfItems(length) {
-        return length;
+    _setNumberOfItems(length, numberOfItems) {
+        if (numberOfItems && numberOfItems > 0) return numberOfItems;
+        if (length > 0) return length;
+        return 0;
     }
 });
