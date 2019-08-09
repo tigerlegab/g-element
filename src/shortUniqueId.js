@@ -48,6 +48,7 @@ export class ShortUniqueId {
             if (uuidLength === null || typeof uuidLength === "undefined" || uuidLength < 1) {
                 throw new Error("Invalid UUID Length Provided");
             }
+            var idIndex;
             id = "";
             for (idIndex = _j = 0; 0 <= uuidLength ? _j < uuidLength : _j > uuidLength; idIndex = 0 <= uuidLength ? ++_j : --_j) {
                 randomPartIdx = parseInt(Math.random() * self.dictLength) % self.dictLength;

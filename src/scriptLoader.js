@@ -9,7 +9,7 @@ export class ScriptLoader {
         }
     }
 
-    loaded() {
+    loaded(evt) {
         this.loadCount++;
         if (this.loadCount == this.totalRequired && typeof this.callback == 'function') this.callback.call();
     }
@@ -20,7 +20,7 @@ export class ScriptLoader {
         s.type = "text/javascript";
         s.async = true;
         s.src = src;
-        s.addEventListener('load', function (e) { self.loaded(); }, false);
+        s.addEventListener('load', function (e) { self.loaded(e); }, false);
         var head = document.getElementsByTagName('head')[0];
         head.appendChild(s);
     }
