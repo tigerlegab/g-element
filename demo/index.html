@@ -179,6 +179,20 @@
 
     <h3>g-calendar</h3>
     <demo-snippet>
+      <custom-style>
+        <style is="custom-style">
+          g-calendar {
+            --g-calendar-left-icon: {
+              content: "<";
+            }
+
+            --g-calendar-right-icon: {
+              content: ">";
+            }
+          }
+        </style>
+      </custom-style>
+
       <template>
         <g-calendar id="calendar"></g-calendar>
       </template>

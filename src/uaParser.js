@@ -472,6 +472,9 @@ var regexes = {
         /(Kindle Fire)/i
         ], [[MODEL, 'Kindle Fire (2011)'], [VENDOR, 'Amazon'], [TYPE, TABLET]], [
 
+        /(CPN-L09)/i
+        ], [[MODEL, 'MediaPad M3 Lite'], [VENDOR, 'Huawei'], [TYPE, TABLET]], [
+
         /(SM-G892A)/i
         ], [[MODEL, 'Galaxy S8'], [VENDOR, 'Samsung'], [TYPE, MOBILE]], [
 

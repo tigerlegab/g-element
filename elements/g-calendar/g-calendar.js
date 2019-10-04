@@ -1,33 +1,74 @@
 import '@polymer/polymer/polymer-legacy.js';
 import { Polymer } from '@polymer/polymer/lib/legacy/polymer-fn.js';
 import { html } from '@polymer/polymer/lib/utils/html-tag.js';
-import { ScriptLoader } from '../../src/scriptLoader.js';
-import { FullCalendarBehavior } from './fc-behavior.js';
-import './fc-base-theme.js';
+import { Calendar } from '@fullcalendar/core';
+import interactionPlugin from '@fullcalendar/interaction';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import './fc-style.js';
 
 /**
  * `g-calendar`
- * Fullcalendar integration to Polymer 3
+ * Fullcalendar v4 integration to Polymer 3
  */
 
-new ScriptLoader([
-    'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.min.js'
-], function () {
-    // Initalize Polymer Element after all required scripts are loaded.
-    // console.log('All scripts loaded! Initialize Polymer.');
+Polymer({
+    _template: html`
+        <style include="fc-style">
+            #calendar {
+                max-width: 900px;
+                margin: 0 auto;
+                @apply --g-calendar;
+            }
+        </style>
 
-    Polymer({
-        _template: html`
-            <style include="fc-base-theme">
-            </style>
-    
-            <div id="calendar"></div>
-        `,
+        <div id="calendar"></div>
+    `,
 
-        is: 'g-calendar',
+    is: 'g-calendar',
 
-        behaviors: [FullCalendarBehavior]
-    });
+    properties: {
+        /**
+        * The underlying FullCalendar element.
+        *
+        * @type Object
+        */
+        calendar: { type: Object, notify: true },
+        /**
+         * Options passed to FullCalendar.
+         *
+         * @type Object
+         */
+        options: {
+            type: Object,
+            observer: '_initialize',
+            value: function () {
+                return {};
+            },
+        },
+        /**
+         * Default fullCalendar plugins.
+         * View https://fullcalendar.io/docs/plugin-index for all available plugins.
+         * 
+         * @readOnly
+         * @type Array
+         * @default [interactionPlugin, dayGridPlugin]
+         */
+        plugins: {
+            type: Array,
+            readOnly: true,
+            notify: true,
+            value: [interactionPlugin, dayGridPlugin]
+        }
+    },
+
+    /**
+     * Documentation - https://fullcalendar.io/docs
+     * @param {*} options 
+     */
+    _initialize(options) {
+        if (this.calendar) this.calendar.destroy();
+        if (!options.plugins || options.plugins.length == 0) options.plugins = this.plugins;
+        this.calendar = new Calendar(this.$.calendar, options);
+        this.calendar.render();
+    }
 });
