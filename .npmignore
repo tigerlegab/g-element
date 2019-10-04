@@ -1,5 +1,4 @@
 /bower_components/
 /node_modules/
 /demo/
-package-clean.js
-package-restore.js
+/scripts/

@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Define absolute paths for original pkg and temporary pkg.
-const ORIG_PKG_PATH = path.resolve(__dirname, './package.json');
+const ORIG_PKG_PATH = path.resolve(__dirname, '../package.json');
 const CACHED_PKG_PATH = path.resolve(__dirname, './cached-package.json');
 
 // Obtain original/cached contents from `cached-package.json`.
@@ -17,3 +17,5 @@ fs.writeFile(ORIG_PKG_PATH, pkgData, function (err) {
 fs.unlink(CACHED_PKG_PATH, function (err) {
     if (err) throw err;
 });
+
+console.log("package restored");
